@@ -1,1604 +1,388 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#fcfbfc">
-  <meta name="description" content="Sakib Shaikh — Software Developer & Full-Stack Developer. Practical digital products, thoughtful interfaces and useful automation.">
-  <title>Sakib Shaikh — Software & Full-Stack Developer</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23b63365'/%3E%3Ctext x='32' y='46' text-anchor='middle' font-family='Arial' font-weight='bold' font-size='44' fill='white'%3ES%3C/text%3E%3C/svg%3E">
-  <link rel="stylesheet" href="css/style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#fcfbfc">
+<meta name="description" content="Sakib Shaikh — Software Developer & Full-Stack Developer. Practical digital products, thoughtful interfaces and useful automation.">
+<title>Sakib Shaikh — Software &amp; Full-Stack Developer</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23b63365'/%3E%3Ctext x='32' y='46' text-anchor='middle' font-family='Arial' font-weight='bold' font-size='44' fill='white'%3ES%3C/text%3E%3C/svg%3E">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/components.css">
 
-  <script>
-    (function () {
-      try {
-        var saved = localStorage.getItem('theme');
-        var system = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        var theme = saved || system;
-        document.documentElement.setAttribute('data-theme', theme);
-      } catch (e) {
-        document.documentElement.setAttribute('data-theme', 'light');
-      }
-    })();
-  </script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
 
-  <style>
-    /* =========================================
-       THEME TOKENS
-       ========================================= */
-    :root {
-      --bg-page: #fcfbfc;
-      --bg-card: #ffffff;
-      --bg-elevated: #f9fafb;
-      --text-primary: #111827;
-      --text-secondary: #4b5563;
-      --text-muted: #9ca3af;
-      --border-soft: #e5e7eb;
-      --border-strong: #d1d5db;
-      --accent: #e83e8c;
-      --accent-soft: rgba(232, 62, 140, 0.08);
-      --accent-gradient: linear-gradient(135deg, #e83e8c 0%, #c2185b 100%);
-      --green: #10b981;
-
-      --nav-bg: rgba(255, 255, 255, 0.75);
-      --nav-border: rgba(255, 255, 255, 0.85);
-      --nav-shadow: 0 8px 32px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04);
-      --nav-link: #4b5563;
-      --nav-link-hover-bg: rgba(0, 0, 0, 0.04);
-      --nav-link-active-bg: rgba(0, 0, 0, 0.06);
-      --nav-link-active: #111827;
-      --wordmark-color: #111827;
-
-      --menu-btn-bg: rgba(0, 0, 0, 0.05);
-      --menu-btn-border: rgba(0, 0, 0, 0.08);
-      --menu-btn-color: #111827;
-      --menu-btn-hover-bg: rgba(0, 0, 0, 0.09);
-
-      --footer-bg: #ffffff;
-      --footer-text: #6b7280;
-      --footer-heading: #111827;
-      --footer-link: #4b5563;
-      --footer-link-hover: #e83e8c;
-      --footer-divider: #e5e7eb;
-      --footer-social-bg: #f3f4f6;
-      --footer-social-border: #e5e7eb;
-      --footer-social-color: #111827;
-      --footer-social-hover-bg: #e83e8c;
-      --footer-social-hover-color: #ffffff;
-      --footer-copyright: #9ca3af;
-
-      --overlay-bg: #ffffff;
-      --overlay-surface: #f3f4f6;
-      --overlay-border: #e5e7eb;
-      --overlay-text: #111827;
-      --overlay-muted: #6b7280;
-      --overlay-item-bg: #f9fafb;
-      --overlay-item-active-bg: rgba(232, 62, 140, 0.08);
-      --overlay-icon-bg: #f3f4f6;
-      --backdrop: rgba(15, 15, 20, 0.35);
-      --modal-shadow: 0 24px 60px rgba(0, 0, 0, 0.18), 0 8px 24px rgba(0, 0, 0, 0.08);
-
-      --clock-face: #f9fafb;
-      --clock-border: #e5e7eb;
-      --clock-tick: #111827;
-      --clock-hand: #111827;
-
-      --globe-land: 17, 24, 39;
-      --globe-ocean: 156, 163, 175;
-    }
-
-    [data-theme="dark"] {
-      --bg-page: #0a0a0a;
-      --bg-card: #121212;
-      --bg-elevated: #18181b;
-      --text-primary: #f4f4f5;
-      --text-secondary: #d4d4d8;
-      --text-muted: #8b8b93;
-      --border-soft: #27272a;
-      --border-strong: #3f3f46;
-      --accent: #e83e8c;
-      --accent-soft: rgba(232, 62, 140, 0.15);
-      --accent-gradient: linear-gradient(135deg, #e83e8c 0%, #c2185b 100%);
-      --green: #34d399;
-
-      --nav-bg: rgba(20, 20, 22, 0.65);
-      --nav-border: rgba(255, 255, 255, 0.08);
-      --nav-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
-      --nav-link: #d4d4d8;
-      --nav-link-hover-bg: rgba(255, 255, 255, 0.06);
-      --nav-link-active-bg: rgba(255, 255, 255, 0.1);
-      --nav-link-active: #ffffff;
-      --wordmark-color: #ffffff;
-
-      --menu-btn-bg: rgba(0, 0, 0, 0.6);
-      --menu-btn-border: rgba(255, 255, 255, 0.1);
-      --menu-btn-color: #ffffff;
-      --menu-btn-hover-bg: rgba(0, 0, 0, 0.85);
-
-      --footer-bg: #0a0a0a;
-      --footer-text: #a1a1aa;
-      --footer-heading: #ffffff;
-      --footer-link: #a1a1aa;
-      --footer-link-hover: #e83e8c;
-      --footer-divider: #27272a;
-      --footer-social-bg: #18181b;
-      --footer-social-border: #27272a;
-      --footer-social-color: #ffffff;
-      --footer-social-hover-bg: #e83e8c;
-      --footer-social-hover-color: #ffffff;
-      --footer-copyright: #71717a;
-
-      --overlay-bg: #131316;
-      --overlay-surface: #18181b;
-      --overlay-border: #27272a;
-      --overlay-text: #ffffff;
-      --overlay-muted: #71717a;
-      --overlay-item-bg: #0f0f12;
-      --overlay-item-active-bg: rgba(232, 62, 140, 0.1);
-      --overlay-icon-bg: #18181b;
-      --backdrop: rgba(0, 0, 0, 0.6);
-      --modal-shadow: 0 24px 60px rgba(0, 0, 0, 0.7), 0 8px 24px rgba(0, 0, 0, 0.5);
-
-      --clock-face: #1c1c1f;
-      --clock-border: #333338;
-      --clock-tick: #ffffff;
-      --clock-hand: #ffffff;
-
-      --globe-land: 244, 244, 245;
-      --globe-ocean: 140, 140, 150;
-    }
-
-    /* =========================================
-       GLOBAL
-       ========================================= */
-    * { box-sizing: border-box; }
-
-    html, body {
-      background-color: var(--bg-page) !important;
-      color: var(--text-primary);
-      font-family: 'Inter', sans-serif;
-      transition: background-color 0.3s ease, color 0.3s ease;
-      margin: 0;
-      padding: 0;
-    }
-
-    a { text-decoration: none; color: inherit; }
-
-    /* =========================================
-       NAVBAR
-       ========================================= */
-    .site-header {
-      background: var(--nav-bg) !important;
-      border: 1px solid var(--nav-border) !important;
-      box-shadow: var(--nav-shadow) !important;
-      backdrop-filter: blur(20px) saturate(180%);
-      -webkit-backdrop-filter: blur(20px) saturate(180%);
-      transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .site-header .wordmark {
-      color: var(--wordmark-color) !important;
-      font-family: 'Playfair Display', serif;
-    }
-    .site-header .wordmark span { color: var(--accent) !important; }
-
-    .site-header .desktop-nav a {
-      color: var(--nav-link) !important;
-      transition: color 0.3s ease, background 0.3s ease;
-    }
-    .site-header .desktop-nav a:hover {
-      color: var(--nav-link-active) !important;
-      background: var(--nav-link-hover-bg) !important;
-    }
-    .site-header .desktop-nav a[aria-current="page"],
-    .site-header .desktop-nav a.active {
-      color: var(--nav-link-active) !important;
-      background: var(--nav-link-active-bg) !important;
-    }
-
-    .site-header .menu-button {
-      background: var(--menu-btn-bg) !important;
-      border: 1px solid var(--menu-btn-border) !important;
-      color: var(--menu-btn-color) !important;
-      border-radius: 999px !important;
-      padding: 8px 16px !important;
-      min-width: 48px;
-      height: 40px;
-      display: inline-flex !important;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-    }
-    .site-header .menu-button:hover { background: var(--menu-btn-hover-bg) !important; }
-    .site-header .menu-button .desktop-key {
-      display: inline-flex !important;
-      align-items: center;
-      justify-content: center;
-      color: inherit !important;
-      font-size: 1rem;
-      line-height: 1;
-    }
-    .site-header .menu-button .mobile-menu { display: none !important; }
-
-    /* =========================================
-       FIX: FORCE SECTIONS TO BE CENTERED
-       ========================================= */
-    .section.container {
-      max-width: 1200px !important;
-      margin-left: auto !important;
-      margin-right: auto !important;
-      padding-left: 32px !important;
-      padding-right: 32px !important;
-      width: 100% !important;
-    }
-
-    .about-preview-grid {
-      display: grid !important;
-      grid-template-columns: 1fr 1fr 1fr !important;
-      gap: 20px !important;
-      width: 100% !important;
-    }
-
-    .clock-globe-grid {
-      display: grid !important;
-      grid-template-columns: 1fr 1.4fr !important;
-      gap: 20px !important;
-      width: 100% !important;
-    }
-
-    @media (max-width: 1024px) {
-      .about-preview-grid { grid-template-columns: 1fr 1fr !important; }
-    }
-    @media (max-width: 720px) {
-      .about-preview-grid { grid-template-columns: 1fr !important; }
-      .clock-globe-grid { grid-template-columns: 1fr !important; }
-    }
-
-    /* =========================================
-       THEMED PANELS + CARDS
-       ========================================= */
-    .panel, .project-card, .contact-cta-card, .ready-connect-card {
-      background-color: var(--bg-card) !important;
-      background-image: none !important;
-      border-color: var(--border-soft) !important;
-      color: var(--text-primary) !important;
-      transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
-    }
-
-    .panel h1, .panel h2, .panel h3, .panel h4, .panel h5, .panel h6 {
-      color: var(--text-primary) !important;
-    }
-    .panel p, .panel span, .panel li, .panel small {
-      color: var(--text-secondary);
-    }
-    .panel .eyebrow {
-      color: var(--accent) !important;
-    }
-
-    .section-heading h2 { color: var(--text-primary) !important; }
-    .section-heading h2 span { color: var(--accent) !important; }
-    .section-heading > p { color: var(--text-secondary) !important; }
-
-    /* =========================================
-       BIO CARD
-       ========================================= */
-    .bio-card .identity h3 { color: var(--accent) !important; }
-    .bio-card .identity p { color: var(--text-secondary) !important; }
-    .bio-card > p { color: var(--text-secondary) !important; }
-    .bio-card .text-link { color: var(--accent) !important; }
-    .bio-card .avatar {
-      background: var(--accent-soft) !important;
-      color: var(--accent) !important;
-      border-color: var(--accent) !important;
-    }
-
-    /* =========================================
-       GLOBE CARD
-       ========================================= */
-    .globe-card {
-      display: flex !important;
-      flex-direction: column !important;
-      align-items: center !important;
-      justify-content: flex-start !important;
-      padding: 26px 22px 20px !important;
-      text-align: center !important;
-    }
-
-    .globe-card .eyebrow {
-      color: var(--accent) !important;
-      margin: 0 0 10px !important;
-      align-self: flex-start !important;
-      text-align: left !important;
-      width: 100% !important;
-    }
-
-    .globe-card h3 {
-      color: var(--text-primary) !important;
-      margin: 0 0 4px !important;
-      align-self: flex-start !important;
-      text-align: left !important;
-      width: 100% !important;
-    }
-    .globe-card h3 span { color: var(--text-muted) !important; }
-
-    .globe-card .globe-container {
-      flex: 0 0 auto !important;
-      width: 100% !important;
-      max-width: 340px !important;
-      height: auto !important;
-      aspect-ratio: 1 / 1 !important;
-      margin: 16px auto 8px !important;
-      position: relative !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      cursor: grab;
-      user-select: none;
-      touch-action: none;
-      align-self: center !important;
-      overflow: visible !important;
-    }
-    .globe-card .globe-container:active { cursor: grabbing; }
-
-    .globe-card .globe-container canvas {
-      width: 100% !important;
-      height: 100% !important;
-      display: block !important;
-      margin: 0 auto !important;
-    }
-
-    .globe-card .globe-caption {
-      color: var(--text-muted) !important;
-      text-align: center !important;
-      font-size: 0.68rem !important;
-      letter-spacing: 0.06em !important;
-      margin: 8px auto 0 !important;
-      display: block !important;
-      background: none !important;
-      background-color: transparent !important;
-      padding: 0 !important;
-      border: none !important;
-      align-self: center !important;
-      width: 100% !important;
-    }
-
-    .globe-card .globe-caption::before,
-    .globe-card .globe-caption::after {
-      display: none !important;
-      content: none !important;
-    }
-
-    /* =========================================
-       EDUCATION CARD
-       ========================================= */
-    .education-card .eyebrow { color: var(--accent) !important; }
-    .education-card h3 { color: var(--text-primary) !important; }
-    .education-card p { color: var(--text-secondary) !important; }
-    .education-card .education-divider { background: var(--border-soft) !important; }
-    .education-card .icon-tile {
-      background: var(--accent-soft) !important;
-      color: var(--accent) !important;
-    }
-    .education-card .tag.green {
-      background: rgba(16, 185, 129, 0.15) !important;
-      color: #10b981 !important;
-    }
-    .education-card .tag.amber {
-      background: rgba(245, 158, 11, 0.15) !important;
-      color: #f59e0b !important;
-    }
-    [data-theme="dark"] .education-card .tag.green { color: #34d399 !important; }
-    [data-theme="dark"] .education-card .tag.amber { color: #fbbf24 !important; }
-
-    /* =========================================
-       CLOCK CARD
-       ========================================= */
-    .clock-card {
-      background: var(--bg-card) !important;
-      background-image: none !important;
-      border-color: var(--border-soft) !important;
-      flex-direction: column !important;
-      align-items: center !important;
-      justify-content: center !important;
-      gap: 18px !important;
-    }
-    .clock-card .clock-info h3,
-    .clock-card h3 { color: var(--text-primary) !important; }
-    .clock-card .clock-info p,
-    .clock-card p { color: var(--text-secondary) !important; }
-    .clock-card .eyebrow { color: var(--accent) !important; }
-    .clock-card .clock-label { color: var(--text-muted) !important; }
-    [data-theme="dark"] .clock-card::before,
-    [data-theme="dark"] .clock-card::after {
-      background: none !important;
-      background-image: none !important;
-      display: none !important;
-    }
-
-    /* =========================================
-       VISION CARD
-       ========================================= */
-    .vision-card {
-      background: var(--bg-card) !important;
-      background-image: none !important;
-      border-color: var(--border-soft) !important;
-      color: var(--text-primary) !important;
-    }
-    .vision-card h3 { color: var(--text-primary) !important; }
-    .vision-card h3 span { color: var(--accent) !important; }
-    .vision-card .eyebrow { color: var(--accent) !important; }
-    .vision-card p { color: var(--text-secondary) !important; }
-
-    .button.button-light {
-      background: var(--bg-elevated) !important;
-      border: 1px solid var(--border-soft) !important;
-      color: var(--text-primary) !important;
-      transition: all 0.25s ease;
-    }
-    .button.button-light:hover {
-      border-color: var(--accent) !important;
-      color: var(--accent) !important;
-    }
-
-    /* =========================================
-       SMOOTH CLOCK
-       ========================================= */
-    .smooth-clock {
-      width: 200px;
-      height: 200px;
-      border-radius: 50%;
-      background: var(--clock-face);
-      border: 1px solid var(--clock-border);
-      position: relative;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), inset 0 2px 8px rgba(0, 0, 0, 0.02);
-      flex-shrink: 0;
-    }
-
-    .smooth-clock .marker {
-      position: absolute;
-      width: 3px;
-      height: 10px;
-      background: var(--clock-tick);
-      left: 50%;
-      top: 8px;
-      transform-origin: 50% 92px;
-      border-radius: 2px;
-      opacity: 0.55;
-    }
-    .smooth-clock .marker.major { opacity: 1; height: 14px; width: 4px; }
-
-    .smooth-clock .marker:nth-child(1) { transform: translateX(-50%) rotate(0deg); }
-    .smooth-clock .marker:nth-child(2) { transform: translateX(-50%) rotate(30deg); }
-    .smooth-clock .marker:nth-child(3) { transform: translateX(-50%) rotate(60deg); }
-    .smooth-clock .marker:nth-child(4) { transform: translateX(-50%) rotate(90deg); }
-    .smooth-clock .marker:nth-child(5) { transform: translateX(-50%) rotate(120deg); }
-    .smooth-clock .marker:nth-child(6) { transform: translateX(-50%) rotate(150deg); }
-    .smooth-clock .marker:nth-child(7) { transform: translateX(-50%) rotate(180deg); }
-    .smooth-clock .marker:nth-child(8) { transform: translateX(-50%) rotate(210deg); }
-    .smooth-clock .marker:nth-child(9) { transform: translateX(-50%) rotate(240deg); }
-    .smooth-clock .marker:nth-child(10) { transform: translateX(-50%) rotate(270deg); }
-    .smooth-clock .marker:nth-child(11) { transform: translateX(-50%) rotate(300deg); }
-    .smooth-clock .marker:nth-child(12) { transform: translateX(-50%) rotate(330deg); }
-
-    .smooth-clock .hand {
-      position: absolute;
-      left: 50%;
-      bottom: 50%;
-      transform-origin: 50% 100%;
-      border-radius: 2px;
-      transform: translateX(-50%);
-    }
-
-    .smooth-clock .hour-hand { width: 5px; height: 55px; background: var(--clock-hand); border-radius: 3px; }
-    .smooth-clock .minute-hand { width: 3px; height: 75px; background: var(--clock-hand); border-radius: 2px; opacity: 0.85; }
-    .smooth-clock .second-hand { width: 1.5px; height: 82px; background: var(--accent); border-radius: 2px; opacity: 0.9; }
-
-    .smooth-clock .center-dot {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 12px;
-      height: 12px;
-      background: var(--accent);
-      border: 3px solid var(--bg-card);
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 5;
-    }
-
-    .clock-digital {
-      font-family: 'Inter', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      color: var(--text-primary) !important;
-      text-align: center;
-    }
-    .clock-digital small {
-      display: block;
-      font-size: 0.65rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--text-muted) !important;
-      font-weight: 600;
-      margin-top: 3px;
-    }
-
-    /* =========================================
-       FEATURED PROJECTS
-       ========================================= */
-    .project-card {
-      background: var(--bg-card) !important;
-      border: 1px solid var(--border-soft) !important;
-    }
-    .project-name h3 { color: var(--text-primary) !important; }
-    .project-description { color: var(--text-secondary) !important; }
-    .project-meta { color: var(--text-muted) !important; }
-    .project-meta span:first-child {
-      background: var(--bg-elevated) !important;
-      color: var(--text-secondary) !important;
-    }
-    .project-footer .tags span {
-      background: var(--bg-elevated) !important;
-      color: var(--text-secondary) !important;
-    }
-
-    /* =========================================
-       READY TO CONNECT
-       ========================================= */
-    .ready-connect-section {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 80px 32px 60px;
-    }
-
-    .ready-connect-header { margin-bottom: 32px; }
-
-    .ready-connect-header h2 {
-      font-family: 'Inter', sans-serif;
-      font-size: clamp(1.8rem, 3.5vw, 2.5rem);
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      color: var(--text-primary) !important;
-      margin: 0 0 8px;
-      line-height: 1.15;
-    }
-
-    .ready-connect-header .pink-underline {
-      display: block;
-      width: 50px;
-      height: 3px;
-      background: var(--accent);
-      border-radius: 2px;
-      margin: 12px 0 16px;
-    }
-
-    .ready-connect-header p {
-      font-size: 1rem;
-      color: var(--text-secondary) !important;
-      margin: 0;
-      max-width: 500px;
-    }
-
-    .ready-connect-card {
-      position: relative;
-      background: var(--bg-card) !important;
-      border: 1px solid rgba(232, 62, 140, 0.25) !important;
-      border-radius: 24px;
-      padding: 80px 40px 70px;
-      text-align: center;
-      overflow: hidden;
-      box-shadow: 0 8px 40px rgba(232, 62, 140, 0.06);
-    }
-
-    .ready-connect-card::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(circle at 0% 0%, rgba(232, 62, 140, 0.14) 0%, transparent 45%),
-        radial-gradient(circle at 100% 100%, rgba(232, 62, 140, 0.06) 0%, transparent 40%);
-      pointer-events: none;
-    }
-
-    .ready-connect-card::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background-image:
-        radial-gradient(circle, rgba(232, 62, 140, 0.25) 1px, transparent 1px),
-        radial-gradient(circle, rgba(232, 62, 140, 0.15) 1px, transparent 1px),
-        radial-gradient(circle, rgba(232, 62, 140, 0.2) 1px, transparent 1px);
-      background-size: 200px 200px, 300px 300px, 250px 250px;
-      background-position: 15% 25%, 80% 70%, 60% 10%;
-      background-repeat: no-repeat;
-      pointer-events: none;
-      opacity: 0.9;
-    }
-
-    .ready-connect-card > * { position: relative; z-index: 1; }
-
-    .ready-connect-card h3 {
-      font-family: 'Inter', sans-serif;
-      font-size: clamp(2.5rem, 6vw, 4.5rem);
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      line-height: 1.05;
-      color: var(--text-primary) !important;
-      margin: 0 0 18px;
-      text-transform: uppercase;
-    }
-    .ready-connect-card h3 em {
-      font-style: normal;
-      color: #f4a8c8 !important;
-    }
-    .ready-connect-card .subtitle {
-      font-family: 'Inter', sans-serif;
-      font-size: clamp(0.95rem, 1.6vw, 1.15rem);
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--text-secondary) !important;
-      margin: 0 0 36px;
-    }
-    .ready-connect-card .btn-get-in-touch {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 16px 32px;
-      background: var(--bg-card) !important;
-      border: 1px solid var(--border-soft) !important;
-      border-radius: 999px;
-      color: var(--text-primary) !important;
-      font-weight: 600;
-      font-size: 0.95rem;
-      transition: all 0.25s ease;
-      margin-bottom: 28px;
-      font-family: 'Inter', sans-serif;
-    }
-    .ready-connect-card .btn-get-in-touch:hover {
-      border-color: var(--accent) !important;
-      color: var(--accent) !important;
-      transform: translateY(-2px);
-    }
-    .ready-connect-card .btn-get-in-touch svg { width: 16px; height: 16px; }
-    .ready-connect-card .tagline {
-      font-size: 0.9rem;
-      color: var(--text-secondary) !important;
-      margin: 0 0 8px;
-      font-weight: 500;
-    }
-    .ready-connect-card .description {
-      font-size: 0.9rem;
-      color: var(--text-secondary) !important;
-      margin: 0 auto;
-      max-width: 480px;
-      line-height: 1.6;
-    }
-
-    /* =========================================
-       FOOTER
-       ========================================= */
-    .site-footer-dark {
-      background: var(--footer-bg) !important;
-      color: var(--footer-text) !important;
-      padding: 60px 24px 30px;
-      font-family: 'Inter', sans-serif;
-      margin-top: 60px;
-      border-top: 1px solid var(--footer-divider);
-      transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-    }
-    .site-footer-dark .footer-content {
-      display: flex;
-      flex-direction: column;
-      gap: 40px;
-      max-width: 1000px;
-      margin: 0 auto;
-    }
-    .site-footer-dark .footer-top {
-      display: grid;
-      grid-template-columns: 1.4fr 1fr 1fr 1fr;
-      gap: 40px;
-      align-items: start;
-    }
-    .site-footer-dark .footer-brand .wordmark {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.6rem;
-      font-weight: 700;
-      color: var(--footer-heading) !important;
-      display: inline-block;
-      margin-bottom: 20px;
-      letter-spacing: -0.5px;
-    }
-    .site-footer-dark .footer-brand .wordmark span { color: var(--accent) !important; }
-    .site-footer-dark .footer-quote {
-      font-size: 0.95rem;
-      line-height: 1.65;
-      max-width: 320px;
-      color: var(--footer-text) !important;
-      font-weight: 400;
-    }
-    .site-footer-dark .footer-col h4 {
-      color: var(--footer-heading) !important;
-      font-size: 0.8rem;
-      letter-spacing: 1.5px;
-      margin-bottom: 20px;
-      text-transform: uppercase;
-      font-weight: 700;
-    }
-    .site-footer-dark .footer-col a {
-      display: block;
-      color: var(--footer-link) !important;
-      text-decoration: none;
-      margin-bottom: 12px;
-      font-size: 0.9rem;
-      transition: color 0.3s;
-    }
-    .site-footer-dark .footer-col a:hover { color: var(--footer-link-hover) !important; }
-    .site-footer-dark .social-icons { display: flex; gap: 12px; }
-    .site-footer-dark .social-icons a {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 44px;
-      height: 44px;
-      background: var(--footer-social-bg) !important;
-      border: 1px solid var(--footer-social-border) !important;
-      border-radius: 50%;
-      color: var(--footer-social-color) !important;
-      transition: all 0.3s ease;
-    }
-    .site-footer-dark .social-icons a:hover {
-      background: var(--footer-social-hover-bg) !important;
-      border-color: var(--footer-social-hover-bg) !important;
-      color: var(--footer-social-hover-color) !important;
-      transform: translateY(-3px);
-    }
-    .site-footer-dark .footer-bottom {
-      border-top: 1px solid var(--footer-divider);
-      margin-top: 20px;
-      padding-top: 24px;
-      text-align: center;
-      font-size: 0.85rem;
-      color: var(--footer-copyright) !important;
-    }
-
-    /* =========================================
-       MENU MODAL
-       ========================================= */
-    .menu-modal {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      background: var(--backdrop);
-      backdrop-filter: blur(14px) saturate(160%);
-      -webkit-backdrop-filter: blur(14px) saturate(160%);
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.3s ease, visibility 0.3s ease, background 0.3s ease;
-    }
-    .menu-modal.active { opacity: 1; visibility: visible; }
-    .menu-card {
-      background: var(--overlay-bg);
-      border: 1px solid var(--overlay-border);
-      border-radius: 20px;
-      padding: 20px;
-      width: 100%;
-      max-width: 640px;
-      max-height: 88vh;
-      overflow-y: auto;
-      box-shadow: var(--modal-shadow);
-      transform: translateY(30px) scale(0.98);
-      opacity: 0;
-      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
-      font-family: 'Inter', sans-serif;
-    }
-    .menu-modal.active .menu-card { transform: translateY(0) scale(1); opacity: 1; }
-    .menu-header {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 24px;
-      align-items: center;
-      flex-wrap: nowrap;
-    }
-    .search-bar {
-      flex: 1;
-      background: var(--overlay-surface);
-      border: 1px solid var(--overlay-border);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      padding: 0 14px;
-      color: var(--overlay-muted);
-      height: 44px;
-      min-width: 0;
-    }
-    .search-bar input {
-      background: transparent;
-      border: none;
-      color: var(--overlay-text);
-      padding: 12px 8px;
-      outline: none;
-      width: 100%;
-      font-size: 0.9rem;
-      font-family: 'Inter', sans-serif;
-    }
-    .search-bar input::placeholder { color: var(--overlay-muted); }
-    .reach-out-btn {
-      background: var(--overlay-icon-bg);
-      border: 1px solid var(--overlay-border);
-      color: var(--overlay-text);
-      border-radius: 12px;
-      padding: 0 18px;
-      height: 44px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      font-weight: 500;
-      white-space: nowrap;
-      transition: background 0.3s;
-      flex-shrink: 0;
-      font-family: 'Inter', sans-serif;
-    }
-    .reach-out-btn:hover { background: var(--overlay-surface); }
-    .icon-btn {
-      background: var(--overlay-icon-bg);
-      border: 1px solid var(--overlay-border);
-      color: var(--overlay-text);
-      border-radius: 12px;
-      width: 44px;
-      height: 44px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: background 0.3s, color 0.3s, border-color 0.3s;
-      flex-shrink: 0;
-    }
-    .icon-btn:hover { background: var(--overlay-surface); }
-    .icon-btn svg { width: 18px; height: 18px; }
-    .icon-btn .sun-icon { display: none; }
-    .icon-btn .moon-icon { display: block; }
-    [data-theme="dark"] .icon-btn .sun-icon { display: block; }
-    [data-theme="dark"] .icon-btn .moon-icon { display: none; }
-    .menu-section { margin-bottom: 24px; }
-    .menu-section:last-child { margin-bottom: 0; }
-    .menu-section h4 {
-      color: var(--overlay-muted);
-      font-size: 0.7rem;
-      letter-spacing: 1.5px;
-      margin-bottom: 12px;
-      text-transform: uppercase;
-      font-weight: 700;
-    }
-    .menu-row-pages {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-    .menu-row-flex { display: flex; flex-wrap: wrap; gap: 10px; }
-    .menu-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: var(--overlay-item-bg);
-      border: 1px solid var(--overlay-border);
-      border-radius: 12px;
-      padding: 14px 16px;
-      color: var(--overlay-text);
-      text-decoration: none;
-      font-size: 0.9rem;
-      font-weight: 500;
-      transition: all 0.25s ease;
-    }
-    .menu-item:hover {
-      background: var(--overlay-surface);
-      border-color: var(--accent);
-      transform: translateY(-1px);
-    }
-    .menu-item.active {
-      border-color: var(--accent);
-      color: var(--accent);
-      background: var(--overlay-item-active-bg);
-    }
-    .menu-item svg { width: 18px; height: 18px; flex-shrink: 0; }
-    .menu-item .external-icon { margin-left: 4px; opacity: 0.5; width: 12px; height: 12px; }
-    .menu-card::-webkit-scrollbar { width: 6px; }
-    .menu-card::-webkit-scrollbar-track { background: transparent; }
-    .menu-card::-webkit-scrollbar-thumb { background: var(--overlay-border); border-radius: 3px; }
-
-    /* =========================================
-       RESPONSIVE
-       ========================================= */
-    @media (max-width: 900px) {
-      .site-footer-dark .footer-top { grid-template-columns: 1fr 1fr; }
-      .site-footer-dark .footer-brand { grid-column: span 2; }
-    }
-    @media (max-width: 720px) {
-      .section.container { padding-left: 20px !important; padding-right: 20px !important; }
-      .ready-connect-section { padding: 60px 20px 40px; }
-      .ready-connect-card { padding: 60px 24px 50px; }
-      .ready-connect-card h3 { font-size: 2.2rem; }
-    }
-    @media (max-width: 640px) {
-      .menu-header { flex-wrap: wrap; }
-      .search-bar { flex: 1 1 100%; order: 1; }
-      .reach-out-btn { order: 2; }
-      .icon-btn { order: 3; }
-    }
-    @media (max-width: 560px) {
-      .site-footer-dark .footer-top { grid-template-columns: 1fr; }
-      .site-footer-dark .footer-brand { grid-column: span 1; }
-    }
-  </style>
+<script>
+(function(){try{var s=localStorage.getItem('theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',s||d);}catch(e){document.documentElement.setAttribute('data-theme','light');}})();
+</script>
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to content</a>
-  <div class="reading-progress" aria-hidden="true"></div>
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="reading-progress" aria-hidden="true"></div>
 
-  <header class="site-header" id="site-header">
-    <a class="wordmark" href="index.html" aria-label="Home">s<span>k.</span></a>
-    <nav class="desktop-nav" aria-label="Main navigation">
-      <a href="index.html" aria-current="page">Home</a>
-      <a href="about.html">About</a>
-      <a href="projects.html">Projects</a>
-      <a href="contact.html">Contact</a>
-    </nav>
-    <button class="menu-button" type="button" id="menu-toggle" aria-label="Open menu" aria-haspopup="dialog" aria-controls="menu-modal" aria-expanded="false">
-      <span class="desktop-key" aria-hidden="true">⌘</span>
-    </button>
-  </header>
+<header class="site-header" id="site-header">
+  <a class="wordmark" href="index.html" aria-label="Home">s<span>k.</span></a>
+  <nav class="desktop-nav" aria-label="Main navigation">
+    <a href="index.html" aria-current="page">Home</a>
+    <a href="about.html">About</a>
+    <a href="projects.html">Projects</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+  <button class="menu-button" type="button" id="menu-toggle" aria-label="Open menu" aria-haspopup="dialog" aria-controls="menu-modal" aria-expanded="false">
+    <span class="desktop-key" aria-hidden="true">⌘</span>
+  </button>
+</header>
 
-  <!-- MENU MODAL -->
-  <div class="menu-modal" id="menu-modal" role="dialog" aria-modal="true" aria-label="Navigation menu">
-    <div class="menu-card" id="menu-card">
-      <div class="menu-header">
-        <div class="search-bar">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-          <input type="text" placeholder="Jump to a page...">
-        </div>
-        <button class="reach-out-btn">Reach out</button>
-        <button class="icon-btn" id="theme-toggle" aria-label="Toggle theme">
-          <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-          <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-        </button>
+<div class="menu-modal" id="menu-modal" role="dialog" aria-modal="true" aria-label="Navigation menu">
+  <div class="menu-card" id="menu-card">
+    <div class="menu-header">
+      <div class="search-bar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input type="text" placeholder="Jump to a page...">
       </div>
+      <button class="reach-out-btn" type="button">Reach out</button>
+      <button class="icon-btn" id="theme-toggle" aria-label="Toggle theme">
+        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+      </button>
+    </div>
 
-      <div class="menu-section">
-        <h4>PAGES</h4>
-        <div class="menu-row-pages">
-          <a href="index.html" class="menu-item active">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-            Home
-          </a>
-          <a href="about.html" class="menu-item">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-            About
-          </a>
-          <a href="projects.html" class="menu-item">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-            Projects
-          </a>
-          <a href="contact.html" class="menu-item">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-            Contact
-          </a>
-        </div>
+    <div class="menu-section">
+      <h4>PAGES</h4>
+      <div class="menu-row-pages">
+        <a href="index.html" class="menu-item active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          Home
+        </a>
+        <a href="about.html" class="menu-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          About
+        </a>
+        <a href="projects.html" class="menu-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+          Projects
+        </a>
+        <a href="contact.html" class="menu-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+          Contact
+        </a>
       </div>
+    </div>
 
-      <div class="menu-section">
-        <h4>CONNECT</h4>
-        <div class="menu-row-flex">
-          <a href="https://github.com/buildwithsakib" target="_blank" rel="noopener" class="menu-item">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-            GitHub
-            <svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-          </a>
-          <a href="mailto:sakib.in7@gmail.com" class="menu-item">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
-            Email
-            <svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-          </a>
-          <a href="https://www.linkedin.com/in/sakibturuk" target="_blank" rel="noopener" class="menu-item">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-            LinkedIn
-            <svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-          </a>
-          <a href="https://www.instagram.com/sakibturuk" target="_blank" rel="noopener" class="menu-item">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-            Instagram
-            <svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-          </a>
-        </div>
+    <div class="menu-section">
+      <h4>CONNECT</h4>
+      <div class="menu-row-flex">
+        <a href="https://github.com/buildwithsakib" target="_blank" rel="noopener" class="menu-item">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          GitHub
+        </a>
+        <a href="mailto:sakib.in7@gmail.com" class="menu-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
+          Email
+        </a>
+        <a href="https://www.linkedin.com/in/sakibturuk" target="_blank" rel="noopener" class="menu-item">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+          LinkedIn
+        </a>
+        <a href="https://www.instagram.com/sakibturuk" target="_blank" rel="noopener" class="menu-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+          Instagram
+        </a>
       </div>
+    </div>
 
-      <div class="menu-section">
-        <h4>LEGAL</h4>
-        <div class="menu-row-flex">
-          <a href="#" class="menu-item">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-            Privacy Policy
-          </a>
-          <a href="#" class="menu-item">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-            Terms of Use
-          </a>
-        </div>
+    <div class="menu-section">
+      <h4>LEGAL</h4>
+      <div class="menu-row-flex">
+        <a href="#" class="menu-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          Privacy Policy
+        </a>
+        <a href="#" class="menu-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          Terms of Use
+        </a>
       </div>
     </div>
   </div>
+</div>
 
-  <main id="main">
-    <!-- HERO -->
-    <section class="hero" id="hero" aria-labelledby="hero-title">
-      <div class="hero-bg" aria-hidden="true">
-        <div class="hero-glow"></div>
-        <div class="hero-lines"></div>
-        <div class="hero-specks"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-      </div>
-      <div class="hero-content">
-        <p class="eyebrow hello">Hi, I'm</p>
-        <h1 id="hero-title">SAKIB<span class="hero-period">.</span></h1>
-        <p class="hero-role">Software Developer &amp; Full-Stack Developer</p>
-        <p class="hero-description">Building practical digital products with clean code,<br class="desktop-break"> thoughtful interfaces and useful automation.</p>
-        <a class="button hero-cta" href="projects.html">Explore my work <span aria-hidden="true">↗</span></a>
-      </div>
-      <div class="hero-bottom" aria-hidden="true">
-        <span class="tiny-label">Code. Create. Simplify.</span>
-        <span class="tiny-label">Based in Pune, India</span>
-      </div>
-    </section>
-
-    <!-- MARQUEE -->
-    <div class="marquee-section" aria-hidden="true">
-      <div class="ribbon ribbon-rose"><div class="marquee-track"><span>FULL-STACK DEVELOPMENT <b>◆</b> USEFUL AUTOMATION <b>◆</b> CLEAN CODE <b>◆</b> PRACTICAL PRODUCTS <b>◆</b> </span><span>FULL-STACK DEVELOPMENT <b>◆</b> USEFUL AUTOMATION <b>◆</b> CLEAN CODE <b>◆</b> PRACTICAL PRODUCTS <b>◆</b> </span></div></div>
-      <div class="ribbon ribbon-white"><div class="marquee-track"><span>THOUGHTFUL INTERFACES <b>◆</b> PROBLEM SOLVING <b>◆</b> ALWAYS LEARNING <b>◆</b> BUILDING WITH PURPOSE <b>◆</b> </span><span>THOUGHTFUL INTERFACES <b>◆</b> PROBLEM SOLVING <b>◆</b> ALWAYS LEARNING <b>◆</b> BUILDING WITH PURPOSE <b>◆</b> </span></div></div>
+<main id="main">
+  <!-- HERO -->
+  <section class="hero" id="hero" aria-labelledby="hero-title">
+    <div class="hero-bg" aria-hidden="true">
+      <div class="hero-glow"></div>
+      <div class="hero-lines"></div>
+      <div class="hero-specks"><i></i><i></i><i></i><i></i><i></i><i></i></div>
     </div>
+    <div class="hero-content page-intro">
+      <p class="eyebrow hello page-intro-item" style="--i:0">Hi, I'm</p>
+      <h1 id="hero-title" class="page-intro-item" style="--i:1">SAKIB<span class="hero-period">.</span></h1>
+      <p class="hero-role page-intro-item" style="--i:2">Software Developer &amp; Full-Stack Developer</p>
+      <p class="hero-description page-intro-item" style="--i:3">Building practical digital products with clean code,<br class="desktop-break"> thoughtful interfaces and useful automation.</p>
+      <a class="button hero-cta page-intro-item" style="--i:4" href="projects.html">Explore my work <span aria-hidden="true">↗</span></a>
+    </div>
+    <div class="hero-bottom" aria-hidden="true">
+      <span class="tiny-label">Code. Create. Simplify.</span>
+      <span class="tiny-label">Based in Pune, India</span>
+    </div>
+  </section>
 
-    <!-- ABOUT PREVIEW -->
-    <section class="section container" id="about-preview" aria-labelledby="about-preview-title">
-      <div class="section-heading reveal">
-        <div>
-          <p class="eyebrow">01 / A little about me</p>
-          <h2 id="about-preview-title">The person behind the code<span>.</span></h2>
+  <!-- MARQUEE -->
+  <div class="marquee-section" aria-hidden="true">
+    <div class="ribbon ribbon-rose"><div class="marquee-track"><span>FULL-STACK DEVELOPMENT <b>◆</b> USEFUL AUTOMATION <b>◆</b> CLEAN CODE <b>◆</b> PRACTICAL PRODUCTS <b>◆</b> </span><span>FULL-STACK DEVELOPMENT <b>◆</b> USEFUL AUTOMATION <b>◆</b> CLEAN CODE <b>◆</b> PRACTICAL PRODUCTS <b>◆</b> </span></div></div>
+    <div class="ribbon ribbon-white"><div class="marquee-track"><span>THOUGHTFUL INTERFACES <b>◆</b> PROBLEM SOLVING <b>◆</b> ALWAYS LEARNING <b>◆</b> BUILDING WITH PURPOSE <b>◆</b> </span><span>THOUGHTFUL INTERFACES <b>◆</b> PROBLEM SOLVING <b>◆</b> ALWAYS LEARNING <b>◆</b> BUILDING WITH PURPOSE <b>◆</b> </span></div></div>
+  </div>
+
+  <!-- ABOUT PREVIEW -->
+  <section class="section container" id="about-preview" aria-labelledby="about-preview-title">
+    <div class="section-heading reveal">
+      <div>
+        <p class="eyebrow">01 / A little about me</p>
+        <h2 id="about-preview-title">The person behind the code<span>.</span></h2>
+      </div>
+      <p>Curiosity first.<br>Purpose in every build.</p>
+    </div>
+    <div class="about-preview-grid">
+      <article class="panel bio-card reveal">
+        <div class="identity">
+          <span class="avatar" aria-hidden="true">S</span>
+          <div>
+            <h3>SAKIB SHAIKH</h3>
+            <p>Software &amp; Full-Stack Developer</p>
+          </div>
         </div>
-        <p>Curiosity first.<br>Purpose in every build.</p>
-      </div>
-      <div class="about-preview-grid">
-        <article class="panel bio-card reveal">
-          <div class="identity">
-            <span class="avatar" aria-hidden="true">S</span>
-            <div>
-              <h3>SAKIB SHAIKH</h3>
-              <p>Software &amp; Full-Stack Developer</p>
-            </div>
-          </div>
-          <p>I build practical digital products that solve real problems. My work focuses on full-stack development, useful automation, clean interfaces and systems that are actually practical to use.</p>
-          <a class="text-link" href="about.html">More about me <span aria-hidden="true">↗</span></a>
-        </article>
-        <article class="panel globe-card reveal">
-          <p class="eyebrow">A connected perspective</p>
-          <h3>Learning locally.<br><span>Thinking beyond boundaries.</span></h3>
-          <div class="globe-container" id="globe-drag-area">
-            <canvas id="globe-canvas-home" aria-label="Interactive globe visualization"></canvas>
-          </div>
-          <span class="globe-caption">Drag to rotate</span>
-        </article>
-        <article class="panel education-card reveal">
-          <p class="eyebrow"><span class="icon-tile" aria-hidden="true">⌂</span> Education</p>
-          <div class="education-content">
-            <span class="tag green">Completed</span>
-            <h3>Bachelor of Computer Applications</h3>
-            <p>Savitribai Phule Pune University (SPPU)</p>
-            <div class="education-divider"></div>
-            <span class="tag amber">Pursuing</span>
-            <h3>Master of Computer Applications</h3>
-            <p>JSPM University, Wagholi, Pune</p>
-          </div>
-        </article>
-      </div>
-    </section>
+        <p>I build practical digital products that solve real problems. My work focuses on full-stack development, useful automation, clean interfaces and systems that are actually practical to use.</p>
+        <a class="text-link" href="about.html">More about me <span aria-hidden="true">↗</span></a>
+      </article>
 
-    <!-- CLOCK + VISION -->
-    <section class="section container clock-globe-section" aria-label="Time and globe">
-      <div class="clock-globe-grid">
-        <article class="panel clock-card reveal">
-          <div class="smooth-clock" aria-hidden="true">
-            <span class="marker major"></span>
-            <span class="marker"></span>
-            <span class="marker major"></span>
-            <span class="marker"></span>
-            <span class="marker major"></span>
-            <span class="marker"></span>
-            <span class="marker major"></span>
-            <span class="marker"></span>
-            <span class="marker major"></span>
-            <span class="marker"></span>
-            <span class="marker major"></span>
-            <span class="marker"></span>
-            <div class="hand hour-hand" id="hour-hand"></div>
-            <div class="hand minute-hand" id="minute-hand"></div>
-            <div class="hand second-hand" id="second-hand"></div>
-            <div class="center-dot"></div>
-          </div>
-          <div class="clock-digital">
-            <span id="clock-time">--:--:--</span>
-            <small>Local time</small>
-          </div>
-        </article>
-        <article class="panel vision-card reveal">
-          <p class="eyebrow">From idea to something useful</p>
-          <h3>Have a practical problem?<br><span>Let's think it through.</span></h3>
-          <a class="button button-light" href="contact.html">Start a conversation <span aria-hidden="true">↗</span></a>
-        </article>
-      </div>
-    </section>
-
-    <!-- FEATURED PROJECTS -->
-    <section class="section featured-projects" id="featured-projects" aria-labelledby="featured-title">
-      <div class="container section-heading reveal">
-        <div>
-          <p class="eyebrow">02 / Selected work</p>
-          <h2 id="featured-title">Featured Projects<span>.</span></h2>
+      <article class="panel globe-card reveal">
+        <p class="eyebrow">A connected perspective</p>
+        <h3>Learning locally.<br><span>Thinking beyond boundaries.</span></h3>
+        <div class="globe-container">
+          <canvas data-globe id="globe-canvas-home" aria-label="Interactive world globe"></canvas>
         </div>
-        <p>Selected work built around practical software,<br>useful automation and thoughtful interfaces.</p>
+        <span class="globe-caption">Drag to rotate</span>
+      </article>
+
+      <article class="panel education-card reveal">
+        <p class="eyebrow"><span class="icon-tile" aria-hidden="true">⌂</span> Education</p>
+        <div class="education-content">
+          <span class="tag green">Completed</span>
+          <h3>Bachelor of Computer Applications</h3>
+          <p>Savitribai Phule Pune University (SPPU)</p>
+          <div class="education-divider"></div>
+          <span class="tag amber">Pursuing</span>
+          <h3>Master of Computer Applications</h3>
+          <p>JSPM University, Wagholi, Pune</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- CLOCK + VISION -->
+  <section class="section container clock-globe-section" aria-label="Time and globe">
+    <div class="clock-globe-grid">
+      <article class="panel clock-card reveal">
+        <div class="smooth-clock" aria-hidden="true">
+          <span class="marker major"></span><span class="marker"></span>
+          <span class="marker major"></span><span class="marker"></span>
+          <span class="marker major"></span><span class="marker"></span>
+          <span class="marker major"></span><span class="marker"></span>
+          <span class="marker major"></span><span class="marker"></span>
+          <span class="marker major"></span><span class="marker"></span>
+          <div class="hand hour-hand" id="hour-hand"></div>
+          <div class="hand minute-hand" id="minute-hand"></div>
+          <div class="hand second-hand" id="second-hand"></div>
+          <div class="center-dot"></div>
+        </div>
+        <div class="clock-digital">
+          <span id="clock-time">--:--:--</span>
+          <small>Local time</small>
+        </div>
+      </article>
+      <article class="panel vision-card reveal">
+        <p class="eyebrow">From idea to something useful</p>
+        <h3>Have a practical problem?<br><span>Let's think it through.</span></h3>
+        <a class="button button-light" href="contact.html">Start a conversation <span aria-hidden="true">↗</span></a>
+      </article>
+    </div>
+  </section>
+
+  <!-- FEATURED PROJECTS -->
+  <section class="section featured-projects" id="featured-projects" aria-labelledby="featured-title">
+    <div class="container section-heading reveal">
+      <div>
+        <p class="eyebrow">02 / Selected work</p>
+        <h2 id="featured-title">Featured Projects<span>.</span></h2>
       </div>
-      <div class="featured-projects-wrapper" id="featured-projects-wrapper">
-        <div class="featured-projects-track" id="featured-projects-track">
-          <article class="project-card" id="project-smartpresence">
-            <div class="project-meta"><span>01</span><i></i><span>Business management</span><i></i><span>Web platform</span></div>
-            <div class="project-name"><span class="project-logo teal-logo" aria-hidden="true">sp</span><h3>SMARTPRESENCE</h3></div>
-            <p class="project-description">Attendance, billing and subscriptions. One connected workflow.</p>
-            <div class="project-art art-presence" role="img" aria-label="SMARTPRESENCE concept illustration">
-              <span class="art-label">SMARTPRESENCE / WORK, IN SYNC</span>
-              <div class="dashboard mock-window">
-                <div class="mock-top"><b>sp<span> smartpresence</span></b><span>Workspace ···</span></div>
-                <div class="dashboard-body">
-                  <aside><b>Overview</b><span>Attendance</span><span>Billing</span><span>Subscriptions</span></aside>
-                  <div class="dashboard-main">
-                    <div class="mock-greeting">Your day, at a glance.<small>A simpler way to stay on top of work.</small></div>
-                    <div class="stat-row"><div><small>Attendance</small><b>In sync <em>↗</em></b></div><div><small>Billing</small><b>Organized</b></div></div>
-                    <div class="mock-chart"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
-                    <div class="mock-table"><span>Team overview</span><span class="mock-status">All in one place</span></div>
-                    <div class="mock-line"></div><div class="mock-line short"></div>
-                  </div>
+      <p>Selected work built around practical software,<br>useful automation and thoughtful interfaces.</p>
+    </div>
+    <div class="featured-projects-wrapper" id="featured-projects-wrapper">
+      <div class="featured-projects-track" id="featured-projects-track">
+        <article class="project-card" id="project-smartpresence">
+          <div class="project-meta"><span>01</span><i></i><span>Business management</span><i></i><span>Web platform</span></div>
+          <div class="project-name"><span class="project-logo teal-logo" aria-hidden="true">sp</span><h3>SMARTPRESENCE</h3></div>
+          <p class="project-description">Attendance, billing and subscriptions. One connected workflow.</p>
+          <div class="project-art art-presence" role="img" aria-label="SMARTPRESENCE concept illustration">
+            <span class="art-label">SMARTPRESENCE / WORK, IN SYNC</span>
+            <div class="dashboard mock-window">
+              <div class="mock-top"><b>sp<span> smartpresence</span></b><span>Workspace ···</span></div>
+              <div class="dashboard-body">
+                <aside><b>Overview</b><span>Attendance</span><span>Billing</span><span>Subscriptions</span></aside>
+                <div class="dashboard-main">
+                  <div class="mock-greeting">Your day, at a glance.<small>A simpler way to stay on top of work.</small></div>
+                  <div class="stat-row"><div><small>Attendance</small><b>In sync <em>↗</em></b></div><div><small>Billing</small><b>Organized</b></div></div>
+                  <div class="mock-chart"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                  <div class="mock-table"><span>Team overview</span><span class="mock-status">All in one place</span></div>
+                  <div class="mock-line"></div><div class="mock-line short"></div>
                 </div>
               </div>
-              <!-- <span class="concept-label">Original concept preview · replace with your screenshot</span> -->
             </div>
-            <div class="project-footer"><div class="tags"><span>Attendance</span><span>Billing</span><span>Subscriptions</span></div></div>
-            <a class="project-link" href="https://github.com/buildwithsakib/SmartPresence-Face-Recognition-Attendance-Billing-Subscription-Platform" target="_blank" rel="noopener">View project <span aria-hidden="true">↗</span></a>
-          </article>
-          <article class="project-card" id="project-dinex">
-            <div class="project-meta"><span>02</span><i></i><span>Restaurant experience</span><i></i><span>QR ordering</span></div>
-            <div class="project-name"><span class="project-logo orange-logo" aria-hidden="true">d.</span><h3>DINEX</h3></div>
-            <p class="project-description">Scan. Discover. Order. A simpler dining experience, from the table.</p>
-            <div class="project-art art-dinex" role="img" aria-label="DINEX concept illustration">
-              <span class="art-label">DINEX / GOOD TASTE. LESS WAIT.</span>
-              <div class="dining-copy">Great food.<br><em>One scan away.</em><span>THE TABLE IS YOUR STARTING POINT.</span></div>
-              <div class="phone">
-                <div class="phone-speaker"></div>
-                <div class="phone-brand">dinex<span>Table 08</span></div>
-                <p>What sounds<br><b>good today?</b></p>
-                <div class="phone-tabs"><b>Popular</b><span>Mains</span><span>Drinks</span></div>
-                <div class="food-plate"><span>✳</span></div>
-                <div class="dish-name"><b>The house special</b><span>Freshly made, thoughtfully served.</span></div>
-                <div class="phone-order">Explore the menu <b>→</b></div>
-              </div>
-              <!-- <span class="concept-label">Original concept preview · replace with your screenshot</span> -->
-            </div>
-            <div class="project-footer"><div class="tags"><span>QR ordering</span><span>Digital menus</span><span>Restaurants</span></div></div>
-            <a class="project-link" href="https://github.com/buildwithsakib/DineX" target="_blank" rel="noopener">View project <span aria-hidden="true">↗</span></a>
-          </article>
-          <article class="project-card" id="project-tenderiq">
-            <div class="project-meta"><span>03</span><i></i><span>Tender automation</span><i></i><span>Desktop app</span></div>
-            <div class="project-name"><span class="project-logo blue-logo" aria-hidden="true">tq</span><h3>TENDERIQ PRO</h3></div>
-            <p class="project-description">Automated GeM bid scanner that reads every tender PDF, applies your rules and exports one clean Excel report.</p>
-            <div class="project-art art-muster" role="img" aria-label="TenderIQ Pro concept illustration">
-              <span class="art-label">TENDERIQ PRO / READ EVERY BID. KEEP THE RIGHT ONES.</span>
-              <div class="sheet mock-window">
-                <div class="mock-top"><b><span class="sheet-icon">X</span> matched_tenders.xlsx</b><span>GeM scan ···</span></div>
-                <div class="sheet-toolbar">File <span>Home</span> Insert <span>Data</span><b>ƒx</b></div>
-                <div class="sheet-grid">
-                  <b></b><b>A</b><b>B</b><b>C</b><b>D</b>
-                  <b>1</b><strong>Bid No.</strong><strong>End Date</strong><strong>State</strong><strong>Match</strong>
-                  <b>2</b><span>GEM/2026/B/…</span><span>—</span><span>—</span><span>—</span>
-                  <b>3</b><span>GEM/2026/B/…</span><span>—</span><span>—</span><span>—</span>
-                  <b>4</b><span>GEM/2026/B/…</span><span>—</span><span>—</span><span>—</span>
-                  <b>5</b><span>GEM/2026/B/…</span><span>—</span><span>—</span><span>—</span>
-                </div>
-              </div>
-              <div class="export-badge"><span>↳</span><div>Manpower tenders only.<small>PDFs read, rules applied, report ready.</small></div><b>✓</b></div>
-              <!-- <span class="concept-label">Original concept preview · replace with your screenshot</span> -->
-            </div>
-            <div class="project-footer"><div class="tags"><span>Python</span><span>PySide6</span><span>Playwright</span><span>PDF parsing</span><span>Excel export</span></div></div>
-            <a class="project-link" href="https://github.com/buildwithsakib/TenderIQ-Pro" target="_blank" rel="noopener">View project <span aria-hidden="true">↗</span></a>
-          </article>
-          <article class="project-card" id="project-kgn">
-            <div class="project-meta"><span>04</span><i></i><span>Business &amp; manpower</span><i></i><span>Web platform</span></div>
-            <div class="project-name"><span class="project-logo blue-logo" aria-hidden="true">k.</span><h3>KGN ENTERPRISES</h3></div>
-            <p class="project-description">A business presence and management platform, built around people and operations.</p>
-            <div class="project-art art-kgn" role="img" aria-label="KGN Enterprises concept illustration">
-              <span class="art-label">KGN ENTERPRISES / PEOPLE. PURPOSE. PROGRESS.</span>
-              <div class="kgn-window mock-window">
-                <div class="mock-top"><b>KGN<span> ENTERPRISES</span></b><span>People &amp; operations ↗</span></div>
-                <div class="kgn-content">
-                  <small>BUSINESS &amp; MANPOWER</small>
-                  <p>The right people.<br><em>A stronger business.</em></p>
-                  <span class="mock-cta">Discover the possibilities ↗</span>
-                  <div class="kgn-blocks"><i></i><i></i><i></i><i></i></div>
-                </div>
-                <div class="kgn-bottom"><span>Connect.</span><span>Organize.</span><span>Move forward.</span></div>
-              </div>
-              <!-- <span class="concept-label">Original concept preview · replace with your screenshot</span> -->
-            </div>
-            <div class="project-footer"><div class="tags"><span>Business website</span><span>Manpower</span><span>Management</span></div></div>
-            <a class="project-link" href="projects.html#kgn-enterprises">View project <span aria-hidden="true">↗</span></a>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- READY TO CONNECT -->
-    <section class="ready-connect-section" aria-labelledby="ready-connect-title">
-      <div class="ready-connect-header reveal">
-        <h2 id="ready-connect-title">Ready to Connect?</h2>
-        <span class="pink-underline"></span>
-        <p>Let's turn your next idea into something real</p>
-      </div>
-      <div class="ready-connect-card reveal">
-        <h3>From Idea to <em>Impact</em></h3>
-        <p class="subtitle">Let's build something real.</p>
-        <a href="contact.html" class="btn-get-in-touch">
-          Get in Touch
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-        </a>
-        <p class="tagline">Open to full-time roles &amp; freelance projects</p>
-        <p class="description">I build high-performance applications that turn complex ideas into seamless user experiences.</p>
-      </div>
-    </section>
-  </main>
-
-  <!-- FOOTER -->
-  <footer class="site-footer-dark">
-    <div class="footer-content">
-      <div class="footer-top">
-        <div class="footer-brand">
-          <a class="wordmark" href="index.html" aria-label="Home">s<span>k.</span></a>
-          <p class="footer-quote">{ Work, for Allah will observe your deeds, and so will His Messenger and the believers. }</p>
-        </div>
-        <div class="footer-col">
-          <h4>LINKS</h4>
-          <a href="index.html">Home</a>
-          <a href="about.html">About</a>
-          <a href="projects.html">Projects</a>
-          <a href="contact.html">Contact</a>
-        </div>
-        <div class="footer-col">
-          <h4>LEGAL</h4>
-          <a href="#">Privacy Policy</a>
-          <a href="#">Terms of Use</a>
-        </div>
-        <div class="footer-col">
-          <h4>SOCIAL</h4>
-          <div class="social-icons">
-            <a href="https://github.com/buildwithsakib" target="_blank" rel="noopener" aria-label="GitHub">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-            </a>
-            <a href="mailto:sakib.in7@gmail.com" aria-label="Email">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
-            </a>
-            <a href="https://www.linkedin.com/in/sakibturuk" target="_blank" rel="noopener" aria-label="LinkedIn">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-            </a>
-            <a href="https://www.instagram.com/sakibturuk" target="_blank" rel="noopener" aria-label="Instagram">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-            </a>
           </div>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <p>© 2026 Sakib Shaikh. All rights reserved.</p>
+          <div class="project-footer"><div class="tags"><span>Attendance</span><span>Billing</span><span>Subscriptions</span></div></div>
+          <a class="project-link" href="https://github.com/buildwithsakib/SmartPresence-Face-Recognition-Attendance-Billing-Subscription-Platform" target="_blank" rel="noopener">View project <span aria-hidden="true">↗</span></a>
+        </article>
+        <article class="project-card" id="project-dinex">
+          <div class="project-meta"><span>02</span><i></i><span>Restaurant experience</span><i></i><span>QR ordering</span></div>
+          <div class="project-name"><span class="project-logo orange-logo" aria-hidden="true">d.</span><h3>DINEX</h3></div>
+          <p class="project-description">Scan. Discover. Order. A simpler dining experience, from the table.</p>
+          <div class="project-art art-dinex" role="img" aria-label="DINEX concept illustration">
+            <span class="art-label">DINEX / GOOD TASTE. LESS WAIT.</span>
+            <div class="dining-copy">Great food.<br><em>One scan away.</em><span>THE TABLE IS YOUR STARTING POINT.</span></div>
+            <div class="phone">
+              <div class="phone-speaker"></div>
+              <div class="phone-brand">dinex<span>Table 08</span></div>
+              <p>What sounds<br><b>good today?</b></p>
+              <div class="phone-tabs"><b>Popular</b><span>Mains</span><span>Drinks</span></div>
+              <div class="food-plate"><span>✳</span></div>
+              <div class="dish-name"><b>The house special</b><span>Freshly made, thoughtfully served.</span></div>
+              <div class="phone-order">Explore the menu <b>→</b></div>
+            </div>
+          </div>
+          <div class="project-footer"><div class="tags"><span>QR ordering</span><span>Digital menus</span><span>Restaurants</span></div></div>
+          <a class="project-link" href="https://github.com/buildwithsakib/DineX" target="_blank" rel="noopener">View project <span aria-hidden="true">↗</span></a>
+        </article>
+        <article class="project-card" id="project-tenderiq">
+          <div class="project-meta"><span>03</span><i></i><span>Tender automation</span><i></i><span>Desktop app</span></div>
+          <div class="project-name"><span class="project-logo blue-logo" aria-hidden="true">tq</span><h3>TENDERIQ PRO</h3></div>
+          <p class="project-description">Automated GeM bid scanner that reads every tender PDF, applies your rules and exports one clean Excel report.</p>
+          <div class="project-art art-muster" role="img" aria-label="TenderIQ Pro concept illustration">
+            <span class="art-label">TENDERIQ PRO / READ EVERY BID. KEEP THE RIGHT ONES.</span>
+            <div class="sheet mock-window">
+              <div class="mock-top"><b><span class="sheet-icon">X</span> matched_tenders.xlsx</b><span>GeM scan ···</span></div>
+              <div class="sheet-toolbar">File <span>Home</span> Insert <span>Data</span><b>ƒx</b></div>
+              <div class="sheet-grid">
+                <b></b><b>A</b><b>B</b><b>C</b><b>D</b>
+                <b>1</b><strong>Bid No.</strong><strong>End Date</strong><strong>State</strong><strong>Match</strong>
+                <b>2</b><span>GEM/2026/B/…</span><span>—</span><span>—</span><span>—</span>
+                <b>3</b><span>GEM/2026/B/…</span><span>—</span><span>—</span><span>—</span>
+                <b>4</b><span>GEM/2026/B/…</span><span>—</span><span>—</span><span>—</span>
+                <b>5</b><span>GEM/2026/B/…</span><span>—</span><span>—</span><span>—</span>
+              </div>
+            </div>
+            <div class="export-badge"><span>↳</span><div>Manpower tenders only.<small>PDFs read, rules applied, report ready.</small></div><b>✓</b></div>
+          </div>
+          <div class="project-footer"><div class="tags"><span>Python</span><span>PySide6</span><span>Playwright</span><span>PDF parsing</span><span>Excel export</span></div></div>
+          <a class="project-link" href="https://github.com/buildwithsakib/TenderIQ-Pro" target="_blank" rel="noopener">View project <span aria-hidden="true">↗</span></a>
+        </article>
+        <article class="project-card" id="project-kgn">
+          <div class="project-meta"><span>04</span><i></i><span>Business &amp; manpower</span><i></i><span>Web platform</span></div>
+          <div class="project-name"><span class="project-logo blue-logo" aria-hidden="true">k.</span><h3>KGN ENTERPRISES</h3></div>
+          <p class="project-description">A business presence and management platform, built around people and operations.</p>
+          <div class="project-art art-kgn" role="img" aria-label="KGN Enterprises concept illustration">
+            <span class="art-label">KGN ENTERPRISES / PEOPLE. PURPOSE. PROGRESS.</span>
+            <div class="kgn-window mock-window">
+              <div class="mock-top"><b>KGN<span> ENTERPRISES</span></b><span>People &amp; operations ↗</span></div>
+              <div class="kgn-content">
+                <small>BUSINESS &amp; MANPOWER</small>
+                <p>The right people.<br><em>A stronger business.</em></p>
+                <span class="mock-cta">Discover the possibilities ↗</span>
+                <div class="kgn-blocks"><i></i><i></i><i></i><i></i></div>
+              </div>
+              <div class="kgn-bottom"><span>Connect.</span><span>Organize.</span><span>Move forward.</span></div>
+            </div>
+          </div>
+          <div class="project-footer"><div class="tags"><span>Business website</span><span>Manpower</span><span>Management</span></div></div>
+          <a class="project-link" href="projects.html#kgn-enterprises">View project <span aria-hidden="true">↗</span></a>
+        </article>
       </div>
     </div>
-  </footer>
+  </section>
 
-  <div class="cursor-dot" id="cursor-dot" aria-hidden="true"></div>
-  <div class="cursor-ring" id="cursor-ring" aria-hidden="true"><span class="cursor-text">VIEW</span></div>
+  <!-- READY TO CONNECT -->
+  <section class="ready-connect-section" aria-labelledby="ready-connect-title">
+    <div class="ready-connect-header reveal">
+      <h2 id="ready-connect-title">Ready to Connect?</h2>
+      <span class="pink-underline"></span>
+      <p>Let's turn your next idea into something real</p>
+    </div>
+    <div class="ready-connect-card reveal">
+      <h3>From Idea to <em>Impact</em></h3>
+      <p class="subtitle">Let's build something real.</p>
+      <a href="contact.html" class="btn-get-in-touch">
+        Get in Touch
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+      </a>
+      <p class="tagline">Open to full-time roles &amp; freelance projects</p>
+      <p class="description">I build high-performance applications that turn complex ideas into seamless user experiences.</p>
+    </div>
+  </section>
+</main>
 
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
-  <script src="js/main.js"></script>
+<footer class="site-footer-dark">
+  <div class="footer-content">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a class="wordmark" href="index.html" aria-label="Home">s<span>k.</span></a>
+        <p class="footer-quote">{ Work, for Allah will observe your deeds, and so will His Messenger and the believers. }</p>
+      </div>
+      <div class="footer-col">
+        <h4>LINKS</h4>
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="projects.html">Projects</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <div class="footer-col">
+        <h4>LEGAL</h4>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Use</a>
+      </div>
+      <div class="footer-col">
+        <h4>SOCIAL</h4>
+        <div class="social-icons">
+          <a href="https://github.com/buildwithsakib" target="_blank" rel="noopener" aria-label="GitHub">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          </a>
+          <a href="mailto:sakib.in7@gmail.com" aria-label="Email">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
+          </a>
+          <a href="https://www.linkedin.com/in/sakibturuk" target="_blank" rel="noopener" aria-label="LinkedIn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+          </a>
+          <a href="https://www.instagram.com/sakibturuk" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Sakib Shaikh. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
 
-  <script>
-    (function () {
-      window.addEventListener('DOMContentLoaded', function () {
+<div class="cursor-dot" id="cursor-dot" aria-hidden="true"></div>
+<div class="cursor-ring" id="cursor-ring" aria-hidden="true"><span class="cursor-text">VIEW</span></div>
 
-        /* ============ MENU MODAL ============ */
-        var menuToggle = document.getElementById('menu-toggle');
-        var modal = document.getElementById('menu-modal');
-        var card = document.getElementById('menu-card');
-
-        if (menuToggle && modal) {
-          var cleanToggle = menuToggle.cloneNode(true);
-          menuToggle.parentNode.replaceChild(cleanToggle, menuToggle);
-          menuToggle = cleanToggle;
-
-          function openModal() {
-            modal.classList.add('active');
-            menuToggle.setAttribute('aria-expanded', 'true');
-            document.body.style.overflow = 'hidden';
-          }
-          function closeModal() {
-            modal.classList.remove('active');
-            menuToggle.setAttribute('aria-expanded', 'false');
-            document.body.style.overflow = '';
-          }
-
-          menuToggle.addEventListener('click', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-            if (modal.classList.contains('active')) closeModal();
-            else openModal();
-          }, true);
-
-          modal.addEventListener('click', function (e) {
-            if (!card.contains(e.target)) closeModal();
-          });
-
-          modal.querySelectorAll('a').forEach(function (link) {
-            link.addEventListener('click', function () { closeModal(); });
-          });
-
-          document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape' && modal.classList.contains('active')) closeModal();
-          });
-        }
-
-        /* ============ THEME TOGGLE ============ */
-        var themeToggle = document.getElementById('theme-toggle');
-
-        function applyTheme(theme) {
-          document.documentElement.setAttribute('data-theme', theme);
-          try { localStorage.setItem('theme', theme); } catch (e) {}
-          var meta = document.querySelector('meta[name="theme-color"]');
-          if (meta) meta.setAttribute('content', theme === 'dark' ? '#0a0a0a' : '#fcfbfc');
-        }
-
-        if (themeToggle) {
-          themeToggle.addEventListener('click', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            var current = document.documentElement.getAttribute('data-theme');
-            applyTheme(current === 'dark' ? 'light' : 'dark');
-          });
-        }
-
-        var mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-        mediaQuery.addEventListener('change', function (e) {
-          if (!localStorage.getItem('theme')) {
-            applyTheme(e.matches ? 'dark' : 'light');
-          }
-        });
-
-        /* ============ PIXEL GLOBE (draggable) ============ */
-        (function initDraggableGlobe() {
-          var canvas = document.getElementById('globe-canvas-home');
-          var dragArea = document.getElementById('globe-drag-area');
-          if (!canvas || !dragArea) return;
-          var ctx = canvas.getContext('2d');
-
-          function resize() {
-            var rect = canvas.getBoundingClientRect();
-            var dpr = window.devicePixelRatio || 1;
-            canvas.width = rect.width * dpr;
-            canvas.height = rect.height * dpr;
-            ctx.setTransform(1, 0, 0, 1, 0, 0);
-            ctx.scale(dpr, dpr);
-          }
-          resize();
-
-          var landRegions = [
-            { latMin: 15, latMax: 70, lonMin: -170, lonMax: -50 },
-            { latMin: -55, latMax: 12, lonMin: -85, lonMax: -35 },
-            { latMin: 35, latMax: 70, lonMin: -10, lonMax: 40 },
-            { latMin: -35, latMax: 35, lonMin: -20, lonMax: 50 },
-            { latMin: 5, latMax: 75, lonMin: 40, lonMax: 150 },
-            { latMin: -45, latMax: -10, lonMin: 110, lonMax: 155 },
-            { latMin: 60, latMax: 83, lonMin: -55, lonMax: -20 }
-          ];
-
-          function isLand(lat, lon) {
-            for (var i = 0; i < landRegions.length; i++) {
-              var r = landRegions[i];
-              if (lat >= r.latMin && lat <= r.latMax && lon >= r.lonMin && lon <= r.lonMax) {
-                var edgeNoise = Math.sin(lat * 0.5) * Math.cos(lon * 0.5);
-                if (edgeNoise > -0.7) return true;
-              }
-            }
-            return false;
-          }
-
-          var rotation = 0;
-          var tilt = 0;
-          var autoRotateSpeed = 0.0022;
-          var isDragging = false;
-          var lastX = 0, lastY = 0;
-          var velocityX = 0;
-          var autoRotateEnabled = true;
-          var resumeTimer = null;
-
-          function readThemeColors() {
-            var cs = getComputedStyle(document.documentElement);
-            var landRaw = cs.getPropertyValue('--globe-land').trim() || '17, 24, 39';
-            var oceanRaw = cs.getPropertyValue('--globe-ocean').trim() || '156, 163, 175';
-            return { land: landRaw, ocean: oceanRaw };
-          }
-
-          function drawGlobe() {
-            var colors = readThemeColors();
-            var rect = canvas.getBoundingClientRect();
-            var w = rect.width;
-            var h = rect.height;
-            var cx = w / 2;
-            var cy = h / 2;
-            var radius = Math.min(w, h) * 0.42;
-
-            ctx.clearRect(0, 0, w, h);
-
-            ctx.beginPath();
-            ctx.arc(cx, cy, radius + 4, 0, Math.PI * 2);
-            ctx.strokeStyle = 'rgba(127, 127, 137, 0.15)';
-            ctx.lineWidth = 1;
-            ctx.stroke();
-
-            var dotCount = 46;
-            var tiltRad = tilt * Math.PI / 180;
-
-            for (var i = 0; i <= dotCount; i++) {
-              var lat = (i / dotCount) * Math.PI - Math.PI / 2;
-              lat += tiltRad;
-              if (lat > Math.PI / 2) lat = Math.PI - lat;
-              if (lat < -Math.PI / 2) lat = -Math.PI - lat;
-
-              var latDeg = (lat * 180) / Math.PI;
-              var circumference = Math.cos(lat);
-              if (circumference <= 0.05) continue;
-
-              var dotsInRow = Math.max(1, Math.round(dotCount * circumference * 1.15));
-
-              for (var j = 0; j < dotsInRow; j++) {
-                var lonAngle = (j / dotsInRow) * Math.PI * 2 + rotation;
-                var lonDeg = ((lonAngle * 180) / Math.PI) % 360;
-
-                var x3d = Math.cos(lat) * Math.sin(lonAngle);
-                var y3d = Math.sin(lat);
-                var z3d = Math.cos(lat) * Math.cos(lonAngle);
-
-                if (z3d < -0.15) continue;
-
-                var screenX = cx + x3d * radius;
-                var screenY = cy - y3d * radius;
-
-                var land = isLand(latDeg, ((lonDeg + 540) % 360) - 180);
-                var depth = (z3d + 1) / 2;
-                var opacity = 0.15 + depth * 0.75;
-
-                if (land) {
-                  ctx.fillStyle = 'rgba(' + colors.land + ', ' + (opacity * 0.95) + ')';
-                  ctx.beginPath();
-                  ctx.arc(screenX, screenY, 1.6, 0, Math.PI * 2);
-                  ctx.fill();
-                } else {
-                  ctx.fillStyle = 'rgba(' + colors.ocean + ', ' + (opacity * 0.4) + ')';
-                  ctx.beginPath();
-                  ctx.arc(screenX, screenY, 1, 0, Math.PI * 2);
-                  ctx.fill();
-                }
-              }
-            }
-
-            if (!isDragging) {
-              rotation += velocityX;
-              velocityX *= 0.94;
-              if (Math.abs(velocityX) < 0.0001) velocityX = 0;
-              if (autoRotateEnabled && Math.abs(velocityX) < 0.0005) {
-                rotation += autoRotateSpeed;
-              }
-            }
-
-            requestAnimationFrame(drawGlobe);
-          }
-          drawGlobe();
-
-          function getX(e) { return (e.touches && e.touches.length) ? e.touches[0].clientX : e.clientX; }
-          function getY(e) { return (e.touches && e.touches.length) ? e.touches[0].clientY : e.clientY; }
-
-          function onDown(e) {
-            isDragging = true;
-            lastX = getX(e);
-            lastY = getY(e);
-            velocityX = 0;
-            dragArea.style.cursor = 'grabbing';
-            if (resumeTimer) { clearTimeout(resumeTimer); resumeTimer = null; }
-            autoRotateEnabled = false;
-            e.preventDefault();
-          }
-          function onMove(e) {
-            if (!isDragging) return;
-            var x = getX(e), y = getY(e);
-            var dx = x - lastX;
-            var dy = y - lastY;
-            rotation += dx * 0.008;
-            tilt -= dy * 0.15;
-            tilt = Math.max(-60, Math.min(60, tilt));
-            velocityX = dx * 0.008;
-            lastX = x;
-            lastY = y;
-            e.preventDefault();
-          }
-          function onUp() {
-            if (!isDragging) return;
-            isDragging = false;
-            dragArea.style.cursor = 'grab';
-            resumeTimer = setTimeout(function () { autoRotateEnabled = true; }, 3000);
-          }
-
-          dragArea.addEventListener('mousedown', onDown);
-          window.addEventListener('mousemove', onMove);
-          window.addEventListener('mouseup', onUp);
-          dragArea.addEventListener('touchstart', onDown, { passive: false });
-          window.addEventListener('touchmove', onMove, { passive: false });
-          window.addEventListener('touchend', onUp);
-
-          window.addEventListener('resize', resize);
-        })();
-
-        /* ============ SMOOTH CLOCK ============ */
-        (function initSmoothClock() {
-          var hourHand = document.getElementById('hour-hand');
-          var minuteHand = document.getElementById('minute-hand');
-          var secondHand = document.getElementById('second-hand');
-          var timeEl = document.getElementById('clock-time');
-          if (!hourHand || !minuteHand) return;
-
-          function pad(n) { return n < 10 ? '0' + n : '' + n; }
-
-          function updateClock() {
-            var now = new Date();
-            var ms = now.getMilliseconds();
-            var sec = now.getSeconds() + ms / 1000;
-            var min = now.getMinutes() + sec / 60;
-            var hr = (now.getHours() % 12) + min / 60;
-
-            hourHand.style.transform = 'translateX(-50%) rotate(' + (hr * 30) + 'deg)';
-            minuteHand.style.transform = 'translateX(-50%) rotate(' + (min * 6) + 'deg)';
-            if (secondHand) {
-              secondHand.style.transform = 'translateX(-50%) rotate(' + (sec * 6) + 'deg)';
-            }
-
-            if (timeEl) {
-              timeEl.textContent = pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
-            }
-
-            requestAnimationFrame(updateClock);
-          }
-          updateClock();
-        })();
-
-        var yearEl = document.getElementById('year');
-        if (yearEl) yearEl.textContent = new Date().getFullYear();
-      });
-    })();
-  </script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="js/globe.js" defer></script>
+<script src="js/contact-modal.js" defer></script>
+<script src="js/main.js" defer></script>
 </body>
 </html>
