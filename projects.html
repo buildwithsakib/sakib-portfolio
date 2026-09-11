@@ -1,1041 +1,254 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#fcfbfc">
-  <meta name="description" content="Selected projects by Sakib Shaikh — practical digital products including SmartPresence, DineX, TenderIQ Pro, VisionPuzzle, FinVault and KGN Enterprises.">
-  <title>Projects — Sakib Shaikh</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23b63365'/%3E%3Ctext x='32' y='46' text-anchor='middle' font-family='Arial' font-weight='bold' font-size='44' fill='white'%3ES%3C/text%3E%3C/svg%3E">
-  <link rel="stylesheet" href="css/style.css">
-
-  <!-- Theme init — runs before paint -->
-  <script>
-    (function () {
-      try {
-        var saved = localStorage.getItem('theme');
-        var system = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        var theme = saved || system;
-        document.documentElement.setAttribute('data-theme', theme);
-      } catch (e) {
-        document.documentElement.setAttribute('data-theme', 'light');
-      }
-    })();
-  </script>
-
-  <style>
-    /* =========================================
-       THEME TOKENS
-       ========================================= */
-    :root {
-      --bg-page: #fcfbfc;
-      --bg-card: #ffffff;
-      --bg-elevated: #f9fafb;
-      --text-primary: #111827;
-      --text-secondary: #4b5563;
-      --text-muted: #9ca3af;
-      --border-soft: #e5e7eb;
-      --border-strong: #d1d5db;
-      --accent: #e83e8c;
-      --accent-soft: rgba(232, 62, 140, 0.08);
-
-      --nav-bg: rgba(255, 255, 255, 0.75);
-      --nav-border: rgba(255, 255, 255, 0.85);
-      --nav-shadow: 0 8px 32px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04);
-      --nav-link: #4b5563;
-      --nav-link-hover-bg: rgba(0, 0, 0, 0.04);
-      --nav-link-active-bg: rgba(0, 0, 0, 0.06);
-      --nav-link-active: #111827;
-      --wordmark-color: #111827;
-
-      --menu-btn-bg: rgba(0, 0, 0, 0.05);
-      --menu-btn-border: rgba(0, 0, 0, 0.08);
-      --menu-btn-color: #111827;
-      --menu-btn-hover-bg: rgba(0, 0, 0, 0.09);
-
-      --footer-bg: #ffffff;
-      --footer-text: #6b7280;
-      --footer-heading: #111827;
-      --footer-link: #4b5563;
-      --footer-link-hover: #e83e8c;
-      --footer-divider: #e5e7eb;
-      --footer-social-bg: #f3f4f6;
-      --footer-social-border: #e5e7eb;
-      --footer-social-color: #111827;
-      --footer-social-hover-bg: #e83e8c;
-      --footer-social-hover-color: #ffffff;
-      --footer-copyright: #9ca3af;
-
-      --overlay-bg: #ffffff;
-      --overlay-surface: #f3f4f6;
-      --overlay-border: #e5e7eb;
-      --overlay-text: #111827;
-      --overlay-muted: #6b7280;
-      --overlay-item-bg: #f9fafb;
-      --overlay-item-active-bg: rgba(232, 62, 140, 0.08);
-      --overlay-icon-bg: #f3f4f6;
-      --backdrop: rgba(15, 15, 20, 0.35);
-      --modal-shadow: 0 24px 60px rgba(0, 0, 0, 0.18), 0 8px 24px rgba(0, 0, 0, 0.08);
-    }
-
-    [data-theme="dark"] {
-      --bg-page: #0a0a0a;
-      --bg-card: #121212;
-      --bg-elevated: #18181b;
-      --text-primary: #f4f4f5;
-      --text-secondary: #d4d4d8;
-      --text-muted: #71717a;
-      --border-soft: #27272a;
-      --border-strong: #3f3f46;
-      --accent: #e83e8c;
-      --accent-soft: rgba(232, 62, 140, 0.12);
-
-      --nav-bg: rgba(20, 20, 22, 0.65);
-      --nav-border: rgba(255, 255, 255, 0.08);
-      --nav-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
-      --nav-link: #a1a1aa;
-      --nav-link-hover-bg: rgba(255, 255, 255, 0.06);
-      --nav-link-active-bg: rgba(255, 255, 255, 0.1);
-      --nav-link-active: #ffffff;
-      --wordmark-color: #ffffff;
-
-      --menu-btn-bg: rgba(0, 0, 0, 0.6);
-      --menu-btn-border: rgba(255, 255, 255, 0.1);
-      --menu-btn-color: #ffffff;
-      --menu-btn-hover-bg: rgba(0, 0, 0, 0.85);
-
-      --footer-bg: #0a0a0a;
-      --footer-text: #a1a1aa;
-      --footer-heading: #ffffff;
-      --footer-link: #a1a1aa;
-      --footer-link-hover: #e83e8c;
-      --footer-divider: #27272a;
-      --footer-social-bg: #18181b;
-      --footer-social-border: #27272a;
-      --footer-social-color: #ffffff;
-      --footer-social-hover-bg: #e83e8c;
-      --footer-social-hover-color: #ffffff;
-      --footer-copyright: #71717a;
-
-      --overlay-bg: #131316;
-      --overlay-surface: #18181b;
-      --overlay-border: #27272a;
-      --overlay-text: #ffffff;
-      --overlay-muted: #71717a;
-      --overlay-item-bg: #0f0f12;
-      --overlay-item-active-bg: rgba(232, 62, 140, 0.1);
-      --overlay-icon-bg: #18181b;
-      --backdrop: rgba(0, 0, 0, 0.6);
-      --modal-shadow: 0 24px 60px rgba(0, 0, 0, 0.7), 0 8px 24px rgba(0, 0, 0, 0.5);
-    }
-
-    /* =========================================
-       GLOBAL
-       ========================================= */
-    html, body {
-      background-color: var(--bg-page) !important;
-      color: var(--text-primary);
-      transition: background-color 0.3s ease, color 0.3s ease;
-    }
-
-    /* =========================================
-       NAVBAR
-       ========================================= */
-    .site-header {
-      background: var(--nav-bg) !important;
-      border: 1px solid var(--nav-border) !important;
-      box-shadow: var(--nav-shadow) !important;
-      backdrop-filter: blur(20px) saturate(180%);
-      -webkit-backdrop-filter: blur(20px) saturate(180%);
-      transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .site-header .wordmark {
-      color: var(--wordmark-color) !important;
-      transition: color 0.3s ease;
-    }
-    .site-header .wordmark span {
-      color: var(--accent) !important;
-    }
-
-    .site-header .desktop-nav a {
-      color: var(--nav-link) !important;
-      transition: color 0.3s ease, background 0.3s ease;
-    }
-    .site-header .desktop-nav a:hover {
-      color: var(--nav-link-active) !important;
-      background: var(--nav-link-hover-bg) !important;
-    }
-    .site-header .desktop-nav a[aria-current="page"],
-    .site-header .desktop-nav a.active {
-      color: var(--nav-link-active) !important;
-      background: var(--nav-link-active-bg) !important;
-    }
-
-    .site-header .menu-button {
-      background: var(--menu-btn-bg) !important;
-      border: 1px solid var(--menu-btn-border) !important;
-      color: var(--menu-btn-color) !important;
-      border-radius: 999px !important;
-      padding: 8px 16px !important;
-      min-width: 48px;
-      height: 40px;
-      display: inline-flex !important;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-    }
-
-    .site-header .menu-button:hover {
-      background: var(--menu-btn-hover-bg) !important;
-    }
-
-    .site-header .menu-button .desktop-key {
-      display: inline-flex !important;
-      align-items: center;
-      justify-content: center;
-      color: inherit !important;
-      font-size: 1rem;
-      line-height: 1;
-    }
-
-    .site-header .menu-button .mobile-menu {
-      display: none !important;
-    }
-
-    /* =========================================
-       CARD/TEXT THEME
-       ========================================= */
-    .project-card,
-    .panel,
-    .ref-card,
-    .bio-card,
-    .globe-card,
-    .education-card,
-    .clock-card,
-    .vision-card {
-      background-color: var(--bg-card) !important;
-      border-color: var(--border-soft) !important;
-      color: var(--text-primary);
-      transition: background-color 0.3s ease, border-color 0.3s ease;
-    }
-
-    .page-hero h1,
-    .hero h1 { color: var(--text-primary); }
-
-    .page-hero-sub,
-    .hero-description { color: var(--text-secondary); }
-
-    .project-meta,
-    .project-meta span:first-child {
-      color: var(--text-muted);
-      background-color: var(--bg-elevated);
-    }
-    .project-name h3 { color: var(--text-primary); }
-    .project-description { color: var(--text-secondary); }
-
-    .project-footer .tags span,
-    .project-detail-links .tag {
-      background-color: var(--bg-elevated);
-      color: var(--text-secondary);
-    }
-    .preview-note { color: var(--text-muted); }
-
-    /* =========================================
-       GREETING
-       ========================================= */
-    .greeting-line {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 8px 16px;
-      background: var(--accent-soft);
-      color: var(--accent);
-      border-radius: 40px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-      margin-bottom: 20px;
-      transition: background 0.3s ease;
-    }
-
-    .greeting-line .dot {
-      width: 8px;
-      height: 8px;
-      background: var(--accent);
-      border-radius: 50%;
-      box-shadow: 0 0 0 4px rgba(232, 62, 140, 0.15);
-      animation: greetingPulse 2s ease-in-out infinite;
-    }
-
-    @keyframes greetingPulse {
-      0%, 100% { box-shadow: 0 0 0 4px rgba(232, 62, 140, 0.15); }
-      50% { box-shadow: 0 0 0 8px rgba(232, 62, 140, 0.05); }
-    }
-
-    /* =========================================
-       FOOTER
-       ========================================= */
-    .site-footer-dark {
-      background: var(--footer-bg);
-      color: var(--footer-text);
-      padding: 60px 24px 30px;
-      font-family: 'Inter', sans-serif;
-      margin-top: 60px;
-      border-top: 1px solid var(--footer-divider);
-      transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-    }
-
-    .site-footer-dark .footer-content {
-      display: flex;
-      flex-direction: column;
-      gap: 40px;
-      max-width: 1000px;
-      margin: 0 auto;
-    }
-
-    .site-footer-dark .footer-top {
-      display: grid;
-      grid-template-columns: 1.4fr 1fr 1fr 1fr;
-      gap: 40px;
-      align-items: start;
-    }
-
-    .site-footer-dark .footer-brand .wordmark {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.6rem;
-      font-weight: 700;
-      color: var(--footer-heading);
-      display: inline-block;
-      margin-bottom: 20px;
-      letter-spacing: -0.5px;
-    }
-
-    .site-footer-dark .footer-brand .wordmark span {
-      color: var(--accent);
-    }
-
-    .site-footer-dark .footer-quote {
-      font-size: 0.95rem;
-      line-height: 1.65;
-      max-width: 320px;
-      color: var(--footer-text);
-      font-weight: 400;
-    }
-
-    .site-footer-dark .footer-col h4 {
-      color: var(--footer-heading);
-      font-size: 0.8rem;
-      letter-spacing: 1.5px;
-      margin-bottom: 20px;
-      text-transform: uppercase;
-      font-weight: 700;
-    }
-
-    .site-footer-dark .footer-col a {
-      display: block;
-      color: var(--footer-link);
-      text-decoration: none;
-      margin-bottom: 12px;
-      font-size: 0.9rem;
-      transition: color 0.3s;
-    }
-
-    .site-footer-dark .footer-col a:hover {
-      color: var(--footer-link-hover);
-    }
-
-    .site-footer-dark .social-icons {
-      display: flex;
-      gap: 12px;
-    }
-
-    .site-footer-dark .social-icons a {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 44px;
-      height: 44px;
-      background: var(--footer-social-bg);
-      border: 1px solid var(--footer-social-border);
-      border-radius: 50%;
-      color: var(--footer-social-color);
-      transition: all 0.3s ease;
-    }
-
-    .site-footer-dark .social-icons a:hover {
-      background: var(--footer-social-hover-bg);
-      border-color: var(--footer-social-hover-bg);
-      color: var(--footer-social-hover-color);
-      transform: translateY(-3px);
-    }
-
-    .site-footer-dark .footer-bottom {
-      border-top: 1px solid var(--footer-divider);
-      margin-top: 20px;
-      padding-top: 24px;
-      text-align: center;
-      font-size: 0.85rem;
-      color: var(--footer-copyright);
-    }
-
-    /* =========================================
-       MENU MODAL
-       ========================================= */
-    .menu-modal {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      background: var(--backdrop);
-      backdrop-filter: blur(14px) saturate(160%);
-      -webkit-backdrop-filter: blur(14px) saturate(160%);
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.3s ease, visibility 0.3s ease, background 0.3s ease;
-    }
-
-    .menu-modal.active {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    .menu-card {
-      background: var(--overlay-bg);
-      border: 1px solid var(--overlay-border);
-      border-radius: 20px;
-      padding: 20px;
-      width: 100%;
-      max-width: 640px;
-      max-height: 88vh;
-      overflow-y: auto;
-      box-shadow: var(--modal-shadow);
-      transform: translateY(30px) scale(0.98);
-      opacity: 0;
-      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, background 0.3s ease, border-color 0.3s ease;
-      font-family: 'Inter', sans-serif;
-      box-sizing: border-box;
-    }
-
-    .menu-modal.active .menu-card {
-      transform: translateY(0) scale(1);
-      opacity: 1;
-    }
-
-    .menu-header {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 24px;
-      align-items: center;
-      flex-wrap: nowrap;
-    }
-
-    .search-bar {
-      flex: 1;
-      background: var(--overlay-surface);
-      border: 1px solid var(--overlay-border);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      padding: 0 14px;
-      color: var(--overlay-muted);
-      height: 44px;
-      min-width: 0;
-    }
-
-    .search-bar input {
-      background: transparent;
-      border: none;
-      color: var(--overlay-text);
-      padding: 12px 8px;
-      outline: none;
-      width: 100%;
-      font-size: 0.9rem;
-      font-family: 'Inter', sans-serif;
-    }
-
-    .search-bar input::placeholder { color: var(--overlay-muted); }
-
-    .reach-out-btn {
-      background: var(--overlay-icon-bg);
-      border: 1px solid var(--overlay-border);
-      color: var(--overlay-text);
-      border-radius: 12px;
-      padding: 0 18px;
-      height: 44px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      font-weight: 500;
-      white-space: nowrap;
-      transition: background 0.3s;
-      flex-shrink: 0;
-    }
-
-    .reach-out-btn:hover { background: var(--overlay-surface); }
-
-    .icon-btn {
-      background: var(--overlay-icon-bg);
-      border: 1px solid var(--overlay-border);
-      color: var(--overlay-text);
-      border-radius: 12px;
-      width: 44px;
-      height: 44px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: background 0.3s, color 0.3s, border-color 0.3s;
-      flex-shrink: 0;
-    }
-
-    .icon-btn:hover { background: var(--overlay-surface); }
-
-    .icon-btn svg {
-      width: 18px;
-      height: 18px;
-    }
-
-    .icon-btn .sun-icon { display: none; }
-    .icon-btn .moon-icon { display: block; }
-    [data-theme="dark"] .icon-btn .sun-icon { display: block; }
-    [data-theme="dark"] .icon-btn .moon-icon { display: none; }
-
-    .menu-section { margin-bottom: 24px; }
-    .menu-section:last-child { margin-bottom: 0; }
-
-    .menu-section h4 {
-      color: var(--overlay-muted);
-      font-size: 0.7rem;
-      letter-spacing: 1.5px;
-      margin-bottom: 12px;
-      text-transform: uppercase;
-      font-weight: 700;
-    }
-
-    .menu-row-pages {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .menu-row-flex {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .menu-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: var(--overlay-item-bg);
-      border: 1px solid var(--overlay-border);
-      border-radius: 12px;
-      padding: 14px 16px;
-      color: var(--overlay-text);
-      text-decoration: none;
-      font-size: 0.9rem;
-      font-weight: 500;
-      transition: all 0.25s ease;
-      box-sizing: border-box;
-    }
-
-    .menu-item:hover {
-      background: var(--overlay-surface);
-      border-color: var(--accent);
-      transform: translateY(-1px);
-    }
-
-    .menu-item.active {
-      border-color: var(--accent);
-      color: var(--accent);
-      background: var(--overlay-item-active-bg);
-    }
-
-    .menu-item svg {
-      width: 18px;
-      height: 18px;
-      flex-shrink: 0;
-    }
-
-    .menu-item .external-icon {
-      margin-left: 4px;
-      opacity: 0.5;
-      width: 12px;
-      height: 12px;
-    }
-
-    .menu-card::-webkit-scrollbar { width: 6px; }
-    .menu-card::-webkit-scrollbar-track { background: transparent; }
-    .menu-card::-webkit-scrollbar-thumb {
-      background: var(--overlay-border);
-      border-radius: 3px;
-    }
-
-    @media (max-width: 900px) {
-      .site-footer-dark .footer-top {
-        grid-template-columns: 1fr 1fr;
-      }
-      .site-footer-dark .footer-brand {
-        grid-column: span 2;
-      }
-    }
-
-    @media (max-width: 640px) {
-      .menu-modal {
-        padding: 16px;
-        align-items: center;
-      }
-      .menu-card {
-        padding: 16px;
-        max-height: 90vh;
-      }
-      .menu-header {
-        flex-wrap: wrap;
-      }
-      .search-bar {
-        flex: 1 1 100%;
-        order: 1;
-      }
-      .reach-out-btn { order: 2; }
-      .icon-btn { order: 3; }
-      .menu-row-pages {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-
-    @media (max-width: 560px) {
-      .site-footer-dark .footer-top {
-        grid-template-columns: 1fr;
-      }
-      .site-footer-dark .footer-brand {
-        grid-column: span 1;
-      }
-      .menu-row-pages {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#fcfbfc">
+<meta name="description" content="Selected projects by Sakib Shaikh — practical digital products including SmartPresence, DineX, TenderIQ Pro, VisionPuzzle, FinVault and KGN Enterprises.">
+<title>Projects — Sakib Shaikh</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23b63365'/%3E%3Ctext x='32' y='46' text-anchor='middle' font-family='Arial' font-weight='bold' font-size='44' fill='white'%3ES%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
+<script>(function(){try{var s=localStorage.getItem('theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',s||d);}catch(e){document.documentElement.setAttribute('data-theme','light');}})();</script>
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to content</a>
-  <div class="reading-progress" aria-hidden="true"></div>
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="reading-progress" aria-hidden="true"></div>
 
-  <header class="site-header" id="site-header">
-    <a class="wordmark" href="index.html" aria-label="Sakib Shaikh, home">s<span>k.</span></a>
-    <nav class="desktop-nav" aria-label="Main navigation">
-      <a href="index.html">Home</a>
-      <a href="about.html">About</a>
-      <a href="projects.html" aria-current="page">Projects</a>
-      <a href="contact.html">Contact</a>
-    </nav>
-    <button class="menu-button" type="button" id="menu-toggle" aria-label="Open menu" aria-haspopup="dialog" aria-controls="menu-modal" aria-expanded="false">
-      <span class="desktop-key" aria-hidden="true">⌘</span>
-    </button>
-  </header>
+<header class="site-header" id="site-header">
+  <a class="wordmark" href="index.html" aria-label="Home">s<span>k.</span></a>
+  <nav class="desktop-nav" aria-label="Main navigation">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="projects.html" aria-current="page">Projects</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+  <button class="menu-button" type="button" id="menu-toggle" aria-label="Open menu" aria-haspopup="dialog" aria-controls="menu-modal" aria-expanded="false">
+    <span class="desktop-key" aria-hidden="true">⌘</span>
+  </button>
+</header>
 
-  <!-- MENU MODAL -->
-  <div class="menu-modal" id="menu-modal" role="dialog" aria-modal="true" aria-label="Navigation menu">
-    <div class="menu-card" id="menu-card">
-
-      <div class="menu-header">
-        <div class="search-bar">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-          <input type="text" placeholder="Jump to a project...">
-        </div>
-        <button class="reach-out-btn">Reach out</button>
-        <button class="icon-btn" id="theme-toggle" aria-label="Toggle theme">
-          <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-          <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-        </button>
+<div class="menu-modal" id="menu-modal" role="dialog" aria-modal="true" aria-label="Navigation menu">
+  <div class="menu-card" id="menu-card">
+    <div class="menu-header">
+      <div class="search-bar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input type="text" placeholder="Jump to a project...">
       </div>
-
-      <div class="menu-section">
-        <h4>PAGES</h4>
-        <div class="menu-row-pages">
-          <a href="index.html" class="menu-item">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-            Home
-          </a>
-          <a href="about.html" class="menu-item">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-            About
-          </a>
-          <a href="projects.html" class="menu-item active">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-            Projects
-          </a>
-          <a href="contact.html" class="menu-item">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-            Contact
-          </a>
-        </div>
+      <button class="reach-out-btn" type="button">Reach out</button>
+      <button class="icon-btn" id="theme-toggle" aria-label="Toggle theme">
+        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+      </button>
+    </div>
+    <div class="menu-section">
+      <h4>PAGES</h4>
+      <div class="menu-row-pages">
+        <a href="index.html" class="menu-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>Home</a>
+        <a href="about.html" class="menu-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>About</a>
+        <a href="projects.html" class="menu-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>Projects</a>
+        <a href="contact.html" class="menu-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>Contact</a>
       </div>
-
-      <div class="menu-section">
-        <h4>CONNECT</h4>
-        <div class="menu-row-flex">
-          <a href="https://github.com/buildwithsakib" target="_blank" rel="noopener" class="menu-item">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-            GitHub
-            <svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-          </a>
-          <a href="mailto:sakib.in7@gmail.com" class="menu-item">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
-            Email
-            <svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-          </a>
-          <a href="https://www.linkedin.com/in/sakibturuk" target="_blank" rel="noopener" class="menu-item">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-            LinkedIn
-            <svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-          </a>
-          <a href="https://www.instagram.com/sakibturuk" target="_blank" rel="noopener" class="menu-item">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-            Instagram
-            <svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-          </a>
-        </div>
+    </div>
+    <div class="menu-section">
+      <h4>CONNECT</h4>
+      <div class="menu-row-flex">
+        <a href="https://github.com/buildwithsakib" target="_blank" rel="noopener" class="menu-item"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>GitHub</a>
+        <a href="mailto:sakib.in7@gmail.com" class="menu-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>Email</a>
+        <a href="https://www.linkedin.com/in/sakibturuk" target="_blank" rel="noopener" class="menu-item"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>LinkedIn</a>
+        <a href="https://www.instagram.com/sakibturuk" target="_blank" rel="noopener" class="menu-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>Instagram</a>
       </div>
-
-      <div class="menu-section">
-        <h4>LEGAL</h4>
-        <div class="menu-row-flex">
-          <a href="#" class="menu-item">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-            Privacy Policy
-          </a>
-          <a href="#" class="menu-item">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-            Terms of Use
-          </a>
-        </div>
+    </div>
+    <div class="menu-section">
+      <h4>LEGAL</h4>
+      <div class="menu-row-flex">
+        <a href="#" class="menu-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>Privacy Policy</a>
+        <a href="#" class="menu-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>Terms of Use</a>
       </div>
-
     </div>
   </div>
+</div>
 
-  <main id="main">
-    <section class="page-hero">
-      <p class="greeting-line"><span class="dot"></span><span id="greeting-text">Hello</span></p>
-      <p class="eyebrow">Selected Projects</p>
-      <h1>Ideas turned into<br><span>practical digital products.</span></h1>
-      <p class="page-hero-sub">Six projects across restaurants, workplaces, banking, tendering and play.</p>
-    </section>
+<main id="main">
+  <section class="page-hero page-intro">
+    <p class="greeting-line page-intro-item" style="--i:0"><span class="dot"></span><span id="greeting-text">Hello</span></p>
+    <p class="eyebrow page-intro-item" style="--i:1">Selected Projects</p>
+    <h1 class="page-intro-item" style="--i:2">Ideas turned into<br><span>practical digital products.</span></h1>
+    <p class="page-hero-sub page-intro-item" style="--i:3">Six projects across restaurants, workplaces, banking, tendering and play.</p>
+  </section>
 
-    <section class="section container projects-list" id="projects-list">
+  <section class="section container projects-list" id="projects-list">
 
-      <!-- 01 · SMARTPRESENCE -->
-      <article class="project-card full-card" id="smartpresence">
-        <div class="project-meta"><span>01</span><i></i><span>Business management</span><i></i><span>Web + AI platform</span></div>
-        <div class="project-name"><span class="project-logo teal-logo" aria-hidden="true">sp</span><h3>SMARTPRESENCE</h3></div>
-        <p class="project-description">Face recognition attendance, wage musters and payroll-ready reports — one connected workflow.</p>
-        <div class="project-art art-presence" role="img" aria-label="SMARTPRESENCE concept illustration">
-          <span class="art-label">SMARTPRESENCE / WORK, IN SYNC</span>
-          <div class="dashboard mock-window">
-            <div class="mock-top"><b>sp<span> smartpresence</span></b><span>Workspace ···</span></div>
-            <div class="dashboard-body">
-              <aside><b>Overview</b><span>Employees</span><span>Attendance</span><span>Wage Muster</span></aside>
-              <div class="dashboard-main">
-                <div class="mock-greeting">Your day, at a glance.<small>A simpler way to stay on top of work.</small></div>
-                <div class="stat-row"><div><small>Attendance</small><b>In sync <em>↗</em></b></div><div><small>Payroll</small><b>Report ready</b></div></div>
-                <div class="mock-chart"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
-                <div class="mock-table"><span>Team overview</span><span class="mock-status">All in one place</span></div>
-                <div class="mock-line"></div><div class="mock-line short"></div>
-              </div>
+    <article class="project-card full-card reveal" id="smartpresence">
+      <div class="project-meta"><span>01</span><i></i><span>Business management</span><i></i><span>Web + AI platform</span></div>
+      <div class="project-name"><span class="project-logo teal-logo" aria-hidden="true">sp</span><h3>SMARTPRESENCE</h3></div>
+      <p class="project-description">Face recognition attendance, wage musters and payroll-ready reports — one connected workflow.</p>
+      <div class="project-art art-presence" role="img" aria-label="SMARTPRESENCE concept illustration">
+        <span class="art-label">SMARTPRESENCE / WORK, IN SYNC</span>
+        <div class="dashboard mock-window">
+          <div class="mock-top"><b>sp<span> smartpresence</span></b><span>Workspace ···</span></div>
+          <div class="dashboard-body">
+            <aside><b>Overview</b><span>Employees</span><span>Attendance</span><span>Wage Muster</span></aside>
+            <div class="dashboard-main">
+              <div class="mock-greeting">Your day, at a glance.<small>A simpler way to stay on top of work.</small></div>
+              <div class="stat-row"><div><small>Attendance</small><b>In sync <em>↗</em></b></div><div><small>Payroll</small><b>Report ready</b></div></div>
+              <div class="mock-chart"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+              <div class="mock-table"><span>Team overview</span><span class="mock-status">All in one place</span></div>
+              <div class="mock-line"></div><div class="mock-line short"></div>
             </div>
-          </div>
-          <!-- <span class="concept-label">Original concept preview · replace with your screenshot</span> -->
-        </div>
-        <div class="project-footer"><div class="tags"><span>Face recognition</span><span>Attendance</span><span>PHP + Python</span><span>Payroll reports</span></div></div>
-        <div class="project-detail-links">
-          <a class="tag" href="https://github.com/buildwithsakib/SmartPresence-Face-Recognition-Attendance-Billing-Subscription-Platform" target="_blank" rel="noopener">View on GitHub ↗</a>
-        </div>
-      </article>
-
-      <!-- 02 · DINEX -->
-      <article class="project-card full-card" id="dinex">
-        <div class="project-meta"><span>02</span><i></i><span>Restaurant experience</span><i></i><span>QR ordering</span></div>
-        <div class="project-name"><span class="project-logo orange-logo" aria-hidden="true">d.</span><h3>DINEX</h3></div>
-        <p class="project-description">Scan. Order. Play. Enjoy. — QR ordering, kitchen display, billing, games, coupons and analytics.</p>
-        <div class="project-art art-dinex" role="img" aria-label="DINEX concept illustration">
-          <span class="art-label">DINEX / GOOD TASTE. LESS WAIT.</span>
-          <div class="dining-copy">Great food.<br><em>One scan away.</em><span>THE TABLE IS YOUR STARTING POINT.</span></div>
-          <div class="phone">
-            <div class="phone-speaker"></div>
-            <div class="phone-brand">dinex<span>Table 08</span></div>
-            <p>What sounds<br><b>good today?</b></p>
-            <div class="phone-tabs"><b>Popular</b><span>Mains</span><span>Drinks</span></div>
-            <div class="food-plate"><span>✳</span></div>
-            <div class="dish-name"><b>The house special</b><span>Freshly made, thoughtfully served.</span></div>
-            <div class="phone-order">Explore the menu <b>→</b></div>
-          </div>
-          <!-- <span class="concept-label">Original concept preview · replace with your screenshot</span> -->
-        </div>
-        <div class="project-footer"><div class="tags"><span>QR ordering</span><span>Kitchen display</span><span>Gamification</span><span>Coupons &amp; billing</span></div></div>
-        <div class="project-detail-links">
-          <a class="tag" href="https://github.com/buildwithsakib/DineX" target="_blank" rel="noopener">View on GitHub ↗</a>
-        </div>
-      </article>
-
-      <!-- 03 · TENDERIQ PRO -->
-      <article class="project-card full-card" id="tenderiq-pro">
-        <div class="project-meta"><span>03</span><i></i><span>Tender automation</span><i></i><span>Desktop app</span></div>
-        <div class="project-name"><span class="project-logo blue-logo" aria-hidden="true">tq</span><h3>TENDERIQ PRO</h3></div>
-        <p class="project-description">An automated GeM bid scanner that reads every tender PDF, applies your rules and exports one clean Excel report.</p>
-        <div class="project-art art-muster" role="img" aria-label="TenderIQ Pro concept illustration">
-          <span class="art-label">TENDERIQ PRO / READ EVERY BID. KEEP THE RIGHT ONES.</span>
-          <div class="sheet mock-window">
-            <div class="mock-top"><b><span class="sheet-icon">X</span> matched_tenders.xlsx</b><span>GeM scan ···</span></div>
-            <div class="sheet-toolbar">File <span>Home</span> Insert <span>Data</span><b>ƒx</b></div>
-            <div class="sheet-grid">
-              <b></b><b>A</b><b>B</b><b>C</b><b>D</b>
-              <b>1</b><strong>Bid No.</strong><strong>End Date</strong><strong>State</strong><strong>Match</strong>
-              <b>2</b><span>GEM/2026/B/…</span><span>—</span><span>—</span><span>—</span>
-              <b>3</b><span>GEM/2026/B/…</span><span>—</span><span>—</span><span>—</span>
-              <b>4</b><span>GEM/2026/B/…</span><span>—</span><span>—</span><span>—</span>
-              <b>5</b><span>GEM/2026/B/…</span><span>—</span><span>—</span><span>—</span>
-            </div>
-          </div>
-          <div class="export-badge"><span>↳</span><div>Manpower tenders only.<small>PDFs read, rules applied, report ready.</small></div><b>✓</b></div>
-          <!-- <span class="concept-label">Original concept preview · replace with your screenshot</span> -->
-        </div>
-        <div class="project-footer"><div class="tags"><span>Python</span><span>PySide6</span><span>Playwright</span><span>PDF parsing</span><span>Excel export</span></div></div>
-        <div class="project-detail-links">
-          <a class="tag" href="https://github.com/buildwithsakib/TenderIQ-Pro" target="_blank" rel="noopener">View on GitHub ↗</a>
-        </div>
-      </article>
-
-      <!-- 04 · VISIONPUZZLE -->
-      <article class="project-card full-card" id="visionpuzzle">
-        <div class="project-meta"><span>04</span><i></i><span>Computer vision</span><i></i><span>Browser game</span></div>
-        <div class="project-name"><span class="project-logo teal-logo" aria-hidden="true">vp</span><h3>VISIONPUZZLE</h3></div>
-        <p class="project-description">An AI hand-gesture puzzle game — capture a photo with your webcam and solve it with your hands.</p>
-        <div class="project-art art-presence" role="img" aria-label="VisionPuzzle concept illustration">
-          <span class="art-label">VISIONPUZZLE / MOVE. MATCH. SOLVE.</span>
-          <div class="dashboard mock-window">
-            <div class="mock-top"><b>vp<span> visionpuzzle</span></b><span>Camera ···</span></div>
-            <div class="dashboard-body">
-              <aside><b>Play</b><span>Puzzle</span><span>Achievements</span><span>Settings</span></aside>
-              <div class="dashboard-main">
-                <div class="mock-greeting">Hands on the puzzle.<small>No mouse required.</small></div>
-                <div class="stat-row"><div><small>Grid</small><b>3 × 3 <em>↗</em></b></div><div><small>Moves</small><b>Tracked</b></div></div>
-                <div class="mock-chart"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
-                <div class="mock-table"><span>Best time</span><span class="mock-status">Saved locally</span></div>
-                <div class="mock-line"></div><div class="mock-line short"></div>
-              </div>
-            </div>
-          </div>
-          <!-- <span class="concept-label">Original concept preview · replace with your screenshot</span> -->
-        </div>
-        <div class="project-footer"><div class="tags"><span>MediaPipe</span><span>Hand tracking</span><span>Canvas</span><span>Vanilla JS</span></div></div>
-        <div class="project-detail-links">
-          <a class="tag" href="https://github.com/buildwithsakib/VisionPuzzle" target="_blank" rel="noopener">View on GitHub ↗</a>
-        </div>
-      </article>
-
-      <!-- 05 · FINVAULT -->
-      <article class="project-card full-card" id="finvault">
-        <div class="project-meta"><span>05</span><i></i><span>Fintech simulation</span><i></i><span>Web platform</span></div>
-        <div class="project-name"><span class="project-logo green-logo" aria-hidden="true">fv</span><h3>FINVAULT</h3></div>
-        <p class="project-description">A modern digital banking simulation — accounts, transfers, loans, cards, KYC and notifications.</p>
-        <div class="project-art art-kgn" role="img" aria-label="FinVault concept illustration">
-          <span class="art-label">FINVAULT / BANKING, SIMULATED END TO END</span>
-          <div class="kgn-window mock-window">
-            <div class="mock-top"><b>fin<span>vault</span></b><span>Customer portal ↗</span></div>
-            <div class="kgn-content">
-              <small>DIGITAL BANKING SIMULATION</small>
-              <p>Every workflow.<br><em>Nothing real at stake.</em></p>
-              <span class="mock-cta">Open the dashboard ↗</span>
-              <div class="kgn-blocks"><i></i><i></i><i></i><i></i></div>
-            </div>
-            <div class="kgn-bottom"><span>Transfers.</span><span>Loans.</span><span>Cards.</span></div>
-          </div>
-          <!-- <span class="concept-label">Original concept preview · replace with your screenshot</span> -->
-        </div>
-        <div class="project-footer"><div class="tags"><span>PHP 8</span><span>MySQL</span><span>Banking simulation</span><span>Security</span></div></div>
-        <div class="project-detail-links">
-          <a class="tag" href="https://github.com/buildwithsakib/FinVault-Modern-Digital-Banking-Platform" target="_blank" rel="noopener">View on GitHub ↗</a>
-        </div>
-      </article>
-
-      <!-- 06 · KGN ENTERPRISES -->
-      <article class="project-card full-card" id="kgn-enterprises">
-        <div class="project-meta"><span>06</span><i></i><span>Business &amp; manpower</span><i></i><span>Web platform</span></div>
-        <div class="project-name"><span class="project-logo blue-logo" aria-hidden="true">k.</span><h3>KGN ENTERPRISES</h3></div>
-        <p class="project-description">A manpower business presence and management platform — jobs, clients, applications and an admin panel.</p>
-        <div class="project-art art-kgn" role="img" aria-label="KGN Enterprises concept illustration">
-          <span class="art-label">KGN ENTERPRISES / PEOPLE. PURPOSE. PROGRESS.</span>
-          <div class="kgn-window mock-window">
-            <div class="mock-top"><b>KGN<span> ENTERPRISES</span></b><span>People &amp; operations ↗</span></div>
-            <div class="kgn-content">
-              <small>BUSINESS &amp; MANPOWER</small>
-              <p>The right people.<br><em>A stronger business.</em></p>
-              <span class="mock-cta">Discover the possibilities ↗</span>
-              <div class="kgn-blocks"><i></i><i></i><i></i><i></i></div>
-            </div>
-            <div class="kgn-bottom"><span>Connect.</span><span>Organize.</span><span>Move forward.</span></div>
-          </div>
-          <!-- <span class="concept-label">Original concept preview · replace with your screenshot</span> -->
-        </div>
-        <div class="project-footer"><div class="tags"><span>Business website</span><span>Manpower</span><span>Admin panel</span><span>PHP + MySQL</span></div></div>
-        <div class="project-detail-links">
-          <a class="tag" href="https://github.com/buildwithsakib" target="_blank" rel="noopener">View on GitHub ↗</a>
-        </div>
-      </article>
-
-      <!-- <p class="preview-note">A note on the visuals: all previews are original interface concepts. Actual project screenshots and links are ready to be added.</p> -->
-    </section>
-  </main>
-
-  <!-- FOOTER -->
-  <footer class="site-footer-dark">
-    <div class="footer-content">
-      <div class="footer-top">
-        <div class="footer-brand">
-          <a class="wordmark" href="index.html" aria-label="Sakib Shaikh, home">s<span>k.</span></a>
-          <p class="footer-quote">{ Work, for Allah will observe your deeds, and so will His Messenger and the believers. }</p>
-        </div>
-
-        <div class="footer-col">
-          <h4>LINKS</h4>
-          <a href="index.html">Home</a>
-          <a href="about.html">About</a>
-          <a href="projects.html">Projects</a>
-          <a href="contact.html">Contact</a>
-        </div>
-
-        <div class="footer-col">
-          <h4>LEGAL</h4>
-          <a href="#">Privacy Policy</a>
-          <a href="#">Terms of Use</a>
-        </div>
-
-        <div class="footer-col">
-          <h4>SOCIAL</h4>
-          <div class="social-icons">
-            <a href="https://github.com/buildwithsakib" target="_blank" rel="noopener" aria-label="GitHub">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-            </a>
-            <a href="mailto:sakib.in7@gmail.com" aria-label="Email">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
-            </a>
-            <a href="https://www.linkedin.com/in/sakibturuk" target="_blank" rel="noopener" aria-label="LinkedIn">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-            </a>
-            <a href="https://www.instagram.com/sakibturuk" target="_blank" rel="noopener" aria-label="Instagram">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-            </a>
           </div>
         </div>
       </div>
+      <div class="project-footer"><div class="tags"><span>Face recognition</span><span>Attendance</span><span>PHP + Python</span><span>Payroll reports</span></div></div>
+      <div class="project-detail-links"><a class="tag" href="https://github.com/buildwithsakib/SmartPresence-Face-Recognition-Attendance-Billing-Subscription-Platform" target="_blank" rel="noopener">View on GitHub ↗</a></div>
+    </article>
 
-      <div class="footer-bottom">
-        <p>© 2026 Sakib Shaikh. All rights reserved.</p>
+    <article class="project-card full-card reveal" id="dinex">
+      <div class="project-meta"><span>02</span><i></i><span>Restaurant experience</span><i></i><span>QR ordering</span></div>
+      <div class="project-name"><span class="project-logo orange-logo" aria-hidden="true">d.</span><h3>DINEX</h3></div>
+      <p class="project-description">Scan. Order. Play. Enjoy. — QR ordering, kitchen display, billing, games, coupons and analytics.</p>
+      <div class="project-art art-dinex" role="img" aria-label="DINEX concept illustration">
+        <span class="art-label">DINEX / GOOD TASTE. LESS WAIT.</span>
+        <div class="dining-copy">Great food.<br><em>One scan away.</em><span>THE TABLE IS YOUR STARTING POINT.</span></div>
+        <div class="phone">
+          <div class="phone-speaker"></div>
+          <div class="phone-brand">dinex<span>Table 08</span></div>
+          <p>What sounds<br><b>good today?</b></p>
+          <div class="phone-tabs"><b>Popular</b><span>Mains</span><span>Drinks</span></div>
+          <div class="food-plate"><span>✳</span></div>
+          <div class="dish-name"><b>The house special</b><span>Freshly made, thoughtfully served.</span></div>
+          <div class="phone-order">Explore the menu <b>→</b></div>
+        </div>
+      </div>
+      <div class="project-footer"><div class="tags"><span>QR ordering</span><span>Kitchen display</span><span>Gamification</span><span>Coupons &amp; billing</span></div></div>
+      <div class="project-detail-links"><a class="tag" href="https://github.com/buildwithsakib/DineX" target="_blank" rel="noopener">View on GitHub ↗</a></div>
+    </article>
+
+    <article class="project-card full-card reveal" id="tenderiq-pro">
+      <div class="project-meta"><span>03</span><i></i><span>Tender automation</span><i></i><span>Desktop app</span></div>
+      <div class="project-name"><span class="project-logo blue-logo" aria-hidden="true">tq</span><h3>TENDERIQ PRO</h3></div>
+      <p class="project-description">An automated GeM bid scanner that reads every tender PDF, applies your rules and exports one clean Excel report.</p>
+      <div class="project-art art-muster" role="img" aria-label="TenderIQ Pro concept illustration">
+        <span class="art-label">TENDERIQ PRO / READ EVERY BID. KEEP THE RIGHT ONES.</span>
+        <div class="sheet mock-window">
+          <div class="mock-top"><b><span class="sheet-icon">X</span> matched_tenders.xlsx</b><span>GeM scan ···</span></div>
+          <div class="sheet-toolbar">File <span>Home</span> Insert <span>Data</span><b>ƒx</b></div>
+          <div class="sheet-grid">
+            <b></b><b>A</b><b>B</b><b>C</b><b>D</b>
+            <b>1</b><strong>Bid No.</strong><strong>End Date</strong><strong>State</strong><strong>Match</strong>
+            <b>2</b><span>GEM/2026/B/…</span><span>—</span><span>—</span><span>—</span>
+            <b>3</b><span>GEM/2026/B/…</span><span>—</span><span>—</span><span>—</span>
+            <b>4</b><span>GEM/2026/B/…</span><span>—</span><span>—</span><span>—</span>
+            <b>5</b><span>GEM/2026/B/…</span><span>—</span><span>—</span><span>—</span>
+          </div>
+        </div>
+        <div class="export-badge"><span>↳</span><div>Manpower tenders only.<small>PDFs read, rules applied, report ready.</small></div><b>✓</b></div>
+      </div>
+      <div class="project-footer"><div class="tags"><span>Python</span><span>PySide6</span><span>Playwright</span><span>PDF parsing</span><span>Excel export</span></div></div>
+      <div class="project-detail-links"><a class="tag" href="https://github.com/buildwithsakib/TenderIQ-Pro" target="_blank" rel="noopener">View on GitHub ↗</a></div>
+    </article>
+
+    <article class="project-card full-card reveal" id="visionpuzzle">
+      <div class="project-meta"><span>04</span><i></i><span>Computer vision</span><i></i><span>Browser game</span></div>
+      <div class="project-name"><span class="project-logo teal-logo" aria-hidden="true">vp</span><h3>VISIONPUZZLE</h3></div>
+      <p class="project-description">An AI hand-gesture puzzle game — capture a photo with your webcam and solve it with your hands.</p>
+      <div class="project-art art-presence" role="img" aria-label="VisionPuzzle concept illustration">
+        <span class="art-label">VISIONPUZZLE / MOVE. MATCH. SOLVE.</span>
+        <div class="dashboard mock-window">
+          <div class="mock-top"><b>vp<span> visionpuzzle</span></b><span>Camera ···</span></div>
+          <div class="dashboard-body">
+            <aside><b>Play</b><span>Puzzle</span><span>Achievements</span><span>Settings</span></aside>
+            <div class="dashboard-main">
+              <div class="mock-greeting">Hands on the puzzle.<small>No mouse required.</small></div>
+              <div class="stat-row"><div><small>Grid</small><b>3 × 3 <em>↗</em></b></div><div><small>Moves</small><b>Tracked</b></div></div>
+              <div class="mock-chart"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+              <div class="mock-table"><span>Best time</span><span class="mock-status">Saved locally</span></div>
+              <div class="mock-line"></div><div class="mock-line short"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="project-footer"><div class="tags"><span>MediaPipe</span><span>Hand tracking</span><span>Canvas</span><span>Vanilla JS</span></div></div>
+      <div class="project-detail-links"><a class="tag" href="https://github.com/buildwithsakib/VisionPuzzle" target="_blank" rel="noopener">View on GitHub ↗</a></div>
+    </article>
+
+    <article class="project-card full-card reveal" id="finvault">
+      <div class="project-meta"><span>05</span><i></i><span>Fintech simulation</span><i></i><span>Web platform</span></div>
+      <div class="project-name"><span class="project-logo green-logo" aria-hidden="true">fv</span><h3>FINVAULT</h3></div>
+      <p class="project-description">A modern digital banking simulation — accounts, transfers, loans, cards, KYC and notifications.</p>
+      <div class="project-art art-kgn" role="img" aria-label="FinVault concept illustration">
+        <span class="art-label">FINVAULT / BANKING, SIMULATED END TO END</span>
+        <div class="kgn-window mock-window">
+          <div class="mock-top"><b>fin<span>vault</span></b><span>Customer portal ↗</span></div>
+          <div class="kgn-content">
+            <small>DIGITAL BANKING SIMULATION</small>
+            <p>Every workflow.<br><em>Nothing real at stake.</em></p>
+            <span class="mock-cta">Open the dashboard ↗</span>
+            <div class="kgn-blocks"><i></i><i></i><i></i><i></i></div>
+          </div>
+          <div class="kgn-bottom"><span>Transfers.</span><span>Loans.</span><span>Cards.</span></div>
+        </div>
+      </div>
+      <div class="project-footer"><div class="tags"><span>PHP 8</span><span>MySQL</span><span>Banking simulation</span><span>Security</span></div></div>
+      <div class="project-detail-links"><a class="tag" href="https://github.com/buildwithsakib/FinVault-Modern-Digital-Banking-Platform" target="_blank" rel="noopener">View on GitHub ↗</a></div>
+    </article>
+
+    <article class="project-card full-card reveal" id="kgn-enterprises">
+      <div class="project-meta"><span>06</span><i></i><span>Business &amp; manpower</span><i></i><span>Web platform</span></div>
+      <div class="project-name"><span class="project-logo blue-logo" aria-hidden="true">k.</span><h3>KGN ENTERPRISES</h3></div>
+      <p class="project-description">A manpower business presence and management platform — jobs, clients, applications and an admin panel.</p>
+      <div class="project-art art-kgn" role="img" aria-label="KGN Enterprises concept illustration">
+        <span class="art-label">KGN ENTERPRISES / PEOPLE. PURPOSE. PROGRESS.</span>
+        <div class="kgn-window mock-window">
+          <div class="mock-top"><b>KGN<span> ENTERPRISES</span></b><span>People &amp; operations ↗</span></div>
+          <div class="kgn-content">
+            <small>BUSINESS &amp; MANPOWER</small>
+            <p>The right people.<br><em>A stronger business.</em></p>
+            <span class="mock-cta">Discover the possibilities ↗</span>
+            <div class="kgn-blocks"><i></i><i></i><i></i><i></i></div>
+          </div>
+          <div class="kgn-bottom"><span>Connect.</span><span>Organize.</span><span>Move forward.</span></div>
+        </div>
+      </div>
+      <div class="project-footer"><div class="tags"><span>Business website</span><span>Manpower</span><span>Admin panel</span><span>PHP + MySQL</span></div></div>
+      <div class="project-detail-links"><a class="tag" href="https://github.com/buildwithsakib" target="_blank" rel="noopener">View on GitHub ↗</a></div>
+    </article>
+  </section>
+</main>
+
+<footer class="site-footer-dark">
+  <div class="footer-content">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a class="wordmark" href="index.html" aria-label="Home">s<span>k.</span></a>
+        <p class="footer-quote">{ Work, for Allah will observe your deeds, and so will His Messenger and the believers. }</p>
+      </div>
+      <div class="footer-col"><h4>LINKS</h4><a href="index.html">Home</a><a href="about.html">About</a><a href="projects.html">Projects</a><a href="contact.html">Contact</a></div>
+      <div class="footer-col"><h4>LEGAL</h4><a href="#">Privacy Policy</a><a href="#">Terms of Use</a></div>
+      <div class="footer-col">
+        <h4>SOCIAL</h4>
+        <div class="social-icons">
+          <a href="https://github.com/buildwithsakib" target="_blank" rel="noopener" aria-label="GitHub"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
+          <a href="mailto:sakib.in7@gmail.com" aria-label="Email"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg></a>
+          <a href="https://www.linkedin.com/in/sakibturuk" target="_blank" rel="noopener" aria-label="LinkedIn"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg></a>
+          <a href="https://www.instagram.com/sakibturuk" target="_blank" rel="noopener" aria-label="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
+        </div>
       </div>
     </div>
-  </footer>
+    <div class="footer-bottom"><p>© 2026 Sakib Shaikh. All rights reserved.</p></div>
+  </div>
+</footer>
 
-  <div class="cursor-dot" id="cursor-dot" aria-hidden="true"></div>
-  <div class="cursor-ring" id="cursor-ring" aria-hidden="true"><span class="cursor-text">VIEW</span></div>
+<div class="cursor-dot" id="cursor-dot" aria-hidden="true"></div>
+<div class="cursor-ring" id="cursor-ring" aria-hidden="true"><span class="cursor-text">VIEW</span></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
-  <script src="js/main.js"></script>
-
-  <script>
-    (function () {
-      window.addEventListener('DOMContentLoaded', function () {
-
-        /* MENU MODAL */
-        var menuToggle = document.getElementById('menu-toggle');
-        var modal = document.getElementById('menu-modal');
-        var card = document.getElementById('menu-card');
-
-        if (menuToggle && modal) {
-          var cleanToggle = menuToggle.cloneNode(true);
-          menuToggle.parentNode.replaceChild(cleanToggle, menuToggle);
-          menuToggle = cleanToggle;
-
-          function openModal() {
-            modal.classList.add('active');
-            menuToggle.setAttribute('aria-expanded', 'true');
-            document.body.style.overflow = 'hidden';
-          }
-          function closeModal() {
-            modal.classList.remove('active');
-            menuToggle.setAttribute('aria-expanded', 'false');
-            document.body.style.overflow = '';
-          }
-
-          menuToggle.addEventListener('click', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-            if (modal.classList.contains('active')) closeModal();
-            else openModal();
-          }, true);
-
-          modal.addEventListener('click', function (e) {
-            if (!card.contains(e.target)) closeModal();
-          });
-
-          modal.querySelectorAll('a').forEach(function (link) {
-            link.addEventListener('click', function () { closeModal(); });
-          });
-
-          document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape' && modal.classList.contains('active')) closeModal();
-          });
-        }
-
-        /* THEME TOGGLE */
-        var themeToggle = document.getElementById('theme-toggle');
-
-        function applyTheme(theme) {
-          document.documentElement.setAttribute('data-theme', theme);
-          try { localStorage.setItem('theme', theme); } catch (e) {}
-          var meta = document.querySelector('meta[name="theme-color"]');
-          if (meta) meta.setAttribute('content', theme === 'dark' ? '#0a0a0a' : '#fcfbfc');
-        }
-
-        if (themeToggle) {
-          themeToggle.addEventListener('click', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            var current = document.documentElement.getAttribute('data-theme');
-            applyTheme(current === 'dark' ? 'light' : 'dark');
-          });
-        }
-
-        var mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-        mediaQuery.addEventListener('change', function (e) {
-          if (!localStorage.getItem('theme')) {
-            applyTheme(e.matches ? 'dark' : 'light');
-          }
-        });
-
-        /* TIME-BASED GREETING */
-        var greetingEl = document.getElementById('greeting-text');
-        if (greetingEl) {
-          var hour = new Date().getHours();
-          var greeting;
-          if (hour >= 5 && hour < 12) greeting = 'Good morning — welcome back';
-          else if (hour >= 12 && hour < 17) greeting = 'Good afternoon — welcome back';
-          else if (hour >= 17 && hour < 21) greeting = 'Good evening — welcome back';
-          else greeting = 'Working late? Welcome';
-          greetingEl.textContent = greeting;
-        }
-
-        /* YEAR */
-        var yearEl = document.getElementById('year');
-        if (yearEl) yearEl.textContent = new Date().getFullYear();
-      });
-    })();
-  </script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="js/globe.js" defer></script>
+<script src="js/contact-modal.js" defer></script>
+<script src="js/main.js" defer></script>
 </body>
 </html>
