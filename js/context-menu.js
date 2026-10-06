@@ -1,14 +1,3 @@
-/* =========================================================
-   Custom right-click context menu (global, one instance).
-   - Replaces the default browser right-click UI on desktop.
-   - Skipped automatically on touch-only devices.
-   - Skipped inside form fields / contenteditable so native
-     paste/copy stays available.
-   - Positioned to stay fully inside the viewport.
-   - Closes on: outside click, Escape, scroll, resize, blur,
-     tab hidden, or after running an action.
-   - NO anti-inspect tricks. NO fake source protection.
-   ========================================================= */
 (function () {
   'use strict';
 
@@ -16,8 +5,8 @@
   if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
 
   /* ---- config (existing portfolio values) ---- */
-  var RESUME_URL   = 'assets/resume/sakib-shaikh-resume.pdf';
-  var RESUME_NAME  = 'Sakib-Shaikh-Resume.pdf';
+  var RESUME_URL   = 'assets/resume/SakibCV.pdf';
+  var RESUME_NAME  = 'SakibCV.pdf';
   var GITHUB_URL   = 'https://github.com/buildwithsakib';
   var LINKEDIN_URL = 'https://www.linkedin.com/in/sakibturuk';
   var EMAIL        = 'sakib.in7@gmail.com';
