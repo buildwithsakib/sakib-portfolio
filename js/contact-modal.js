@@ -1,15 +1,3 @@
-/* =========================================================
-   Reach Out modal — shared by every page.
-   Screen 1: intro + composer + email + socials.
-   Screen 2: contact form (Name / Email / Topic / Message +
-             consent). Submits via FormSubmit AJAX.
-
-   ONE-TIME SETUP REQUIRED:
-   1. Visit https://formsubmit.co/ and enter sakib.in7@gmail.com
-      (or just open the site and submit the form once).
-   2. FormSubmit will email you an activation link. Click it once.
-   3. After that, every submission is forwarded to that inbox.
-   ========================================================= */
 (function () {
   'use strict';
 
