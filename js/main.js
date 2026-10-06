@@ -1,11 +1,3 @@
-/* =========================================================
-   SAKIB portfolio — main interactions (v2)
-   Removed: Lenis, dead globe init, dead command-menu code,
-            dead clock IDs, unused setInterval.
-   Unified: menu modal, theme, clock, cursor, reveal, header,
-            reading progress, hero glow.
-   All rAF work pauses when the tab is hidden.
-   ========================================================= */
 (() => {
   'use strict';
 
