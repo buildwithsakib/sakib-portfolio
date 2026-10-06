@@ -1,13 +1,3 @@
-/* =========================================================
-   Accurate rotating world globe (v2)
-   - Real geographic coastline polygons → rasterised once into
-     an equirectangular land mask (offscreen canvas, 720x360).
-   - Land check uses the dot's FIXED geographic lon/lat, so as
-     the globe spins, new continents rotate into view.
-   - Dots bolder, rotation speed increased slightly.
-   - Pauses when offscreen / tab hidden.
-   - devicePixelRatio capped at 2.
-   ========================================================= */
 (function () {
   'use strict';
 
