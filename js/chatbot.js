@@ -1,24 +1,18 @@
 /**
- * AI Portfolio Chatbot — frontend widget (v3)
+ * AI Portfolio Chatbot — frontend widget (v3.1)
  *
- * Changes vs v2:
- *  - Suggested questions live in a persistent container and are
- *    re-rendered after every response (success or error).
- *  - Only the send button is disabled while a request is in flight;
- *    the input stays usable so users can start typing the next question.
- *  - A single `renderSuggestions()` helper guarantees no duplicate
- *    buttons or multiple containers.
- *  - Server errors surface with a specific, actionable message.
+ * Functionally identical to v3 for suggestions, history, and error display.
+ * Only tweaks: clearer copy for "upstream_unavailable" and a comment
+ * explaining that the send button is the only control disabled in-flight.
  */
 (function () {
   'use strict';
 
-  /* ---------- Config ---------- */
   var API_ENDPOINT = '/api/chat';
-  var MAX_HISTORY_TURNS = 4;                 /* user+model pairs kept in memory */
+  var MAX_HISTORY_TURNS = 4;
   var MAX_HISTORY_MESSAGES = MAX_HISTORY_TURNS * 2;
-  var TYPING_DELAY_MS = 250;                 /* minimum visible typing time */
-  var FOLLOW_UP_COUNT = 3;                   /* how many follow-up chips to show */
+  var TYPING_DELAY_MS = 250;
+  var FOLLOW_UP_COUNT = 3;
 
   var INITIAL_SUGGESTIONS = [
     'Who is Sakib Shaikh?',
@@ -43,7 +37,6 @@
     'What are his strengths as a developer?'
   ];
 
-  /* ---------- Icons ---------- */
   var ICON_CHAT =
     '<svg class="icon-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
     '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>' +
@@ -59,11 +52,10 @@
     '<line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline>' +
     '</svg>';
 
-  /* ---------- State ---------- */
   var state = {
     isOpen: false,
     isSending: false,
-    history: [],          /* committed turns only: [{role:'user'|'model', text}] */
+    history: [],
     hasWelcomed: false,
     returnFocus: null
   };
@@ -71,7 +63,6 @@
   var els = {};
   var typingEl = null;
 
-  /* ---------- DOM helpers ---------- */
   function createEl(tag, className, attrs) {
     var el = document.createElement(tag);
     if (className) el.className = className;
@@ -92,7 +83,6 @@
     });
   }
 
-  /* ---------- History normalization (client side) ---------- */
   function normalizeHistory(history) {
     if (!Array.isArray(history) || history.length === 0) return [];
 
@@ -127,19 +117,12 @@
     return merged;
   }
 
-  /* ---------- Suggestion helpers ---------- */
-
-  /* Renders the given questions into the persistent container, replacing
-     whatever was there before. Never creates a second container. */
   function renderSuggestions(questions) {
     if (!els.suggestions) return;
-
     while (els.suggestions.firstChild) {
       els.suggestions.removeChild(els.suggestions.firstChild);
     }
-
     if (!Array.isArray(questions) || questions.length === 0) return;
-
     questions.forEach(function (q) {
       var btn = createEl('button', 'chat-suggestion', { type: 'button', text: q });
       btn.addEventListener('click', function () { sendMessage(q); });
@@ -164,9 +147,7 @@
     }
   }
 
-  /* ---------- DOM construction ---------- */
   function buildUI() {
-    /* Launcher button */
     els.launcher = createEl('button', 'chat-launcher', {
       type: 'button',
       'aria-label': 'Open chat assistant',
@@ -176,7 +157,6 @@
     els.launcher.innerHTML = ICON_CHAT + ICON_CLOSE;
     document.body.appendChild(els.launcher);
 
-    /* Chat window */
     els.window = createEl('div', 'chat-window', {
       id: 'chat-window',
       role: 'dialog',
@@ -184,7 +164,6 @@
       'aria-label': 'Portfolio chat assistant'
     });
 
-    /* Header */
     var header = createEl('div', 'chat-header');
     var avatar = createEl('div', 'chat-header-avatar', { text: 'S', 'aria-hidden': 'true' });
     var meta = createEl('div', 'chat-header-meta');
@@ -205,19 +184,16 @@
     header.appendChild(meta);
     header.appendChild(closeBtn);
 
-    /* Messages */
     els.messages = createEl('div', 'chat-messages', {
       role: 'log',
       'aria-live': 'polite',
       'aria-label': 'Chat messages'
     });
 
-    /* Suggestions (persistent container — content is filled in later) */
     els.suggestions = createEl('div', 'chat-suggestions', {
       'aria-label': 'Suggested questions'
     });
 
-    /* Input row */
     var inputRow = createEl('div', 'chat-input-row');
     els.input = createEl('textarea', 'chat-input', {
       placeholder: 'Ask about Sakib...',
@@ -241,7 +217,6 @@
     els.window.appendChild(inputRow);
     document.body.appendChild(els.window);
 
-    /* Events */
     els.launcher.addEventListener('click', toggle);
     closeBtn.addEventListener('click', close);
     els.send.addEventListener('click', function () { sendMessage(); });
@@ -271,11 +246,9 @@
       close();
     });
 
-    /* Initial suggestions */
     renderSuggestions(INITIAL_SUGGESTIONS);
   }
 
-  /* ---------- Open / close ---------- */
   function open() {
     if (state.isOpen) return;
     state.isOpen = true;
@@ -313,7 +286,6 @@
 
   function toggle() { state.isOpen ? close() : open(); }
 
-  /* ---------- Message rendering ---------- */
   function addUserMessage(text) {
     var msg = createEl('div', 'chat-msg chat-msg--user');
     var bubble = createEl('div', 'chat-bubble');
@@ -339,7 +311,6 @@
     scrollToBottom();
   }
 
-  /* ---------- Typing indicator ---------- */
   function showTyping() {
     if (typingEl) return;
     typingEl = createEl('div', 'chat-typing', { 'aria-label': 'Assistant is typing' });
@@ -353,7 +324,6 @@
     typingEl = null;
   }
 
-  /* ---------- Error message mapping ---------- */
   function mapErrorToMessage(err) {
     var code = (err && err.code) || '';
     var msg  = (err && err.message) || '';
@@ -371,8 +341,10 @@
       case 'invalid_json':
         return "I couldn't process that. Try rephrasing your question.";
       case 'model_not_found':
-      case 'upstream_error':
+        return "The assistant is temporarily unavailable. Please try again in a moment.";
       case 'upstream_unavailable':
+        return "The AI service is briefly overloaded. Please try again in a few seconds.";
+      case 'upstream_error':
         return "The assistant is temporarily unavailable. Please try again in a moment.";
       case 'missing_message':
         return "Please type a question first.";
@@ -388,7 +360,6 @@
     return "Something went wrong. Please try again.";
   }
 
-  /* ---------- Send flow ---------- */
   function sendMessage(overrideText) {
     if (state.isSending) return;
 
@@ -402,14 +373,12 @@
 
     addUserMessage(text);
 
-    /* History sent to the server = previously COMMITTED turns only. */
     var outgoingHistory = normalizeHistory(state.history);
 
-    /* Clear suggestions while the request is in flight. */
     hideSuggestions();
 
     state.isSending = true;
-    els.send.disabled = true;                /* only the send button is disabled */
+    els.send.disabled = true;   // only the send button; input stays usable
     showTyping();
 
     var startTime = Date.now();
@@ -438,7 +407,6 @@
           throw e;
         }
 
-        /* Commit the successful turn only. */
         state.history.push({ role: 'user', text: text });
         state.history.push({ role: 'model', text: reply });
         state.history = normalizeHistory(state.history);
@@ -479,7 +447,6 @@
       });
   }
 
-  /* ---------- Init ---------- */
   function init() {
     if (document.getElementById('chat-window')) return;
     buildUI();
