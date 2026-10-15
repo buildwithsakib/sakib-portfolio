@@ -9,35 +9,35 @@
  * Rate limiting is in-memory (per warm invocation). It is NOT persistent
  * across cold starts. For production-grade limiting use Vercel KV / Upstash.
  *
- * Retry policy: transient upstream errors (503, 429, 500, 502, 504) are
- * retried up to 2 times with exponential backoff + jitter, bounded by the
- * Vercel function time budget. Permanent errors (400, 401, 403, 404) are
- * NOT retried. See Google's retry guidance:
- * https://ai.google.dev/gemini-api/docs/troubleshooting
+ * Retry policy: transient upstream errors (502, 503, 504) are retried at
+ * most ONE time with a short exponential backoff + jitter, bounded by the
+ * Vercel function time budget. Permanent errors (400, 401, 403, 404) and
+ * rate-limit errors (429) are NOT retried.
+ *
+ * NOTE ON TIMEOUTS: Vercel Hobby has a 10s function limit by default.
+ * REQUEST_TIMEOUT_MS is set to 8.5s to leave headroom. If you upgrade to
+ * Pro (60s limit) you can safely raise it, but the retry loop will use
+ * whatever budget you give it.
  */
 
 const GEMINI_MODEL = 'gemini-3.5-flash';
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 
 const MAX_MESSAGE_LENGTH = 600;
-const MAX_HISTORY_MESSAGES = 16;          // 8 user/model pairs
-const MAX_TURN_TEXT_LENGTH = 4000;        // per history entry, defensive cap
-const REQUEST_TIMEOUT_MS = 25_000;
+const MAX_HISTORY_MESSAGES = 8;           // 4 user/model pairs
+const MAX_TURN_TEXT_LENGTH = 1500;        // per history entry, defensive cap
+const REQUEST_TIMEOUT_MS = 8_500;         // fits inside Vercel Hobby's 10s limit
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX = 10;
 
 /* ---------- Retry configuration ---------- */
-const MAX_RETRIES = 2;                    // attempts after the initial try
-const RETRY_BASE_DELAY_MS = 1000;         // 1s, then ~2s
-const RETRY_MAX_DELAY_MS = 4000;          // cap any single backoff wait
-const RETRY_JITTER_MS = 400;              // random jitter added to each wait
-const RETRYABLE_STATUSES = new Set([429, 500, 502, 503, 504]);
+const MAX_RETRIES = 1;                    // one retry after the initial attempt
+const RETRY_BASE_DELAY_MS = 600;          // 600ms, capped below
+const RETRY_MAX_DELAY_MS = 1500;
+const RETRY_JITTER_MS = 200;
+const RETRYABLE_STATUSES = new Set([502, 503, 504]);
 
-/* Safety margin so retries never push us past the Vercel function limit.
-   If your plan's maxDuration is 60s (Pro) rather than 10s (Hobby default),
-   bump REQUEST_TIMEOUT_MS accordingly — the retry loop will use whatever
-   budget remains. */
-const MIN_REMAINING_BUDGET_MS = 2500;     // don't start a retry with < 2.5s left
+const MIN_REMAINING_BUDGET_MS = 1500;     // don't start a retry with less than this left
 
 /* ---------- Portfolio knowledge (unchanged) ---------- */
 
@@ -228,12 +228,6 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-/**
- * Computes the backoff delay for a given retry index (1-based).
- * Delay = base * 2^(index-1), capped at RETRY_MAX_DELAY_MS,
- * plus a random jitter in [0, RETRY_JITTER_MS).
- * Jitter prevents multiple visitors from retrying in lockstep.
- */
 function computeBackoffDelay(retryIndex) {
   const exponential = RETRY_BASE_DELAY_MS * Math.pow(2, retryIndex - 1);
   const capped = Math.min(exponential, RETRY_MAX_DELAY_MS);
@@ -243,34 +237,22 @@ function computeBackoffDelay(retryIndex) {
 
 /* ---------- Gemini call with bounded retries ---------- */
 
-/**
- * Calls the Gemini generateContent endpoint with retry-on-transient-error.
- *
- * @param {object} payload - Gemini request body.
- * @param {string} apiKey  - Gemini API key (never logged or echoed).
- * @param {number} deadline - Absolute epoch ms after which we must stop.
- * @returns {Promise<{ok: true, data: object} | {ok: false, status: number, body: string, errorCode?: string}>}
- */
 async function callGeminiWithRetry(payload, apiKey, deadline) {
   let lastStatus = 0;
   let lastBody = '';
-  let lastErrorCode = undefined;
 
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
-    /* Check remaining budget before every attempt (including the first). */
     const remaining = deadline - Date.now();
     if (remaining < MIN_REMAINING_BUDGET_MS) {
-      // Not enough time to safely finish another attempt.
       return {
         ok: false,
         status: lastStatus || 504,
-        body: lastBody || 'Request deadline exceeded before attempt could run.',
-        errorCode: 'timeout'
+        body: lastBody || 'Deadline exceeded before attempt could run.'
       };
     }
 
-    /* Per-attempt timeout: never exceed the remaining budget. */
-    const attemptTimeoutMs = Math.max(1000, Math.min(REQUEST_TIMEOUT_MS, remaining));
+    /* Never exceed the remaining budget. No floor greater than `remaining`. */
+    const attemptTimeoutMs = Math.min(REQUEST_TIMEOUT_MS, remaining);
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), attemptTimeoutMs);
 
@@ -291,51 +273,41 @@ async function callGeminiWithRetry(payload, apiKey, deadline) {
 
       lastStatus = upstream.status;
       lastBody = await upstream.text().catch(() => '');
-      lastErrorCode = upstream.headers.get('x-goog-error-code') || undefined;
 
-      /* Permanent errors — do not retry. */
+      /* Permanent / non-retryable — return immediately. */
       if (!RETRYABLE_STATUSES.has(upstream.status)) {
-        return { ok: false, status: upstream.status, body: lastBody, errorCode: lastErrorCode };
+        return { ok: false, status: lastStatus, body: lastBody };
       }
 
-      /* Transient error — log and retry if budget allows. */
       console.warn(
-        `[chat] Gemini ${upstream.status} on attempt ${attempt + 1}/${MAX_RETRIES + 1}:`,
-        lastBody.slice(0, 200)
+        `[chat] Gemini ${upstream.status} on attempt ${attempt + 1}/${MAX_RETRIES + 1}`
       );
     } catch (err) {
       clearTimeout(timeoutId);
 
       if (err && err.name === 'AbortError') {
         lastStatus = 504;
-        lastBody = 'Upstream request timed out.';
-        lastErrorCode = 'timeout';
-        console.warn(`[chat] Gemini attempt ${attempt + 1} timed out after ${attemptTimeoutMs}ms`);
+        lastBody = 'Upstream timeout.';
       } else {
         lastStatus = 502;
         lastBody = (err && err.message) ? String(err.message).slice(0, 200) : 'Network error.';
-        lastErrorCode = 'network_error';
-        console.warn(`[chat] Gemini attempt ${attempt + 1} network error:`, lastBody);
       }
+      console.warn(`[chat] Gemini attempt ${attempt + 1} failed: ${lastBody}`);
     }
 
-    /* If we have more retries and budget, wait then loop. */
-    if (attempt < MAX_RETRIES) {
-      const delay = computeBackoffDelay(attempt + 1);
-      const afterWaitRemaining = deadline - Date.now() - delay;
-      if (afterWaitRemaining < MIN_REMAINING_BUDGET_MS) {
-        // Not enough budget after this wait — stop here, return last error.
-        break;
-      }
-      await sleep(delay);
-    }
+    /* Last attempt — return the error. */
+    if (attempt >= MAX_RETRIES) break;
+
+    /* Only wait if the budget still fits the delay AND a fresh attempt. */
+    const delay = computeBackoffDelay(attempt + 1);
+    if (deadline - Date.now() - delay < MIN_REMAINING_BUDGET_MS) break;
+    await sleep(delay);
   }
 
   return {
     ok: false,
     status: lastStatus || 503,
-    body: lastBody || 'Gemini is temporarily unavailable.',
-    errorCode: lastErrorCode
+    body: lastBody || 'Gemini is temporarily unavailable.'
   };
 }
 
@@ -415,7 +387,7 @@ export default async function handler(req, res) {
       temperature: 0.7,
       topP: 0.9,
       topK: 40,
-      maxOutputTokens: 800
+      maxOutputTokens: 400           // reduced from 800 — faster, still 2-5 sentences
     },
     safetySettings: [
       { category: 'HARM_CATEGORY_HARASSMENT',        threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
