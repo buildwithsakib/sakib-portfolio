@@ -1,25 +1,46 @@
 /**
- * AI Portfolio Chatbot — frontend widget (v2)
+ * AI Portfolio Chatbot — frontend widget (v3)
  *
- * Key change vs v1: conversation history is committed only after a
- * successful reply, and it is normalized before every request so
- * Gemini never sees an invalid `contents` array.
+ * Changes vs v2:
+ *  - Suggested questions live in a persistent container and are
+ *    re-rendered after every response (success or error).
+ *  - Only the send button is disabled while a request is in flight;
+ *    the input stays usable so users can start typing the next question.
+ *  - A single `renderSuggestions()` helper guarantees no duplicate
+ *    buttons or multiple containers.
+ *  - Server errors surface with a specific, actionable message.
  */
 (function () {
   'use strict';
 
   /* ---------- Config ---------- */
   var API_ENDPOINT = '/api/chat';
-  var MAX_HISTORY_TURNS = 8;      /* user+model pairs kept in memory */
+  var MAX_HISTORY_TURNS = 4;                 /* user+model pairs kept in memory */
   var MAX_HISTORY_MESSAGES = MAX_HISTORY_TURNS * 2;
-  var TYPING_DELAY_MS = 350;
+  var TYPING_DELAY_MS = 250;                 /* minimum visible typing time */
+  var FOLLOW_UP_COUNT = 3;                   /* how many follow-up chips to show */
 
-  var SUGGESTED_QUESTIONS = [
+  var INITIAL_SUGGESTIONS = [
     'Who is Sakib Shaikh?',
     'Show me your projects',
     'What are your skills?',
     'Tell me about your education',
     'How can I contact you?'
+  ];
+
+  var FOLLOW_UP_POOL = [
+    'Tell me about SmartPresence',
+    'What is DineX?',
+    'Explain TenderIQ Pro',
+    'What is VisionPuzzle?',
+    'Tell me about FinVault',
+    'Tell me about KGN Enterprises',
+    'Where can I find his resume?',
+    'What technologies does he use?',
+    'Is he available for hire?',
+    'How can I reach him?',
+    'What is his educational background?',
+    'What are his strengths as a developer?'
   ];
 
   /* ---------- Icons ---------- */
@@ -85,10 +106,8 @@
       valid.push({ role: t.role, text: text });
     }
 
-    // History must start with a 'user' turn.
     while (valid.length > 0 && valid[0].role !== 'user') valid.shift();
 
-    // Merge consecutive same-role turns (safety net).
     var merged = [];
     for (var j = 0; j < valid.length; j++) {
       var curr = valid[j];
@@ -108,8 +127,46 @@
     return merged;
   }
 
+  /* ---------- Suggestion helpers ---------- */
+
+  /* Renders the given questions into the persistent container, replacing
+     whatever was there before. Never creates a second container. */
+  function renderSuggestions(questions) {
+    if (!els.suggestions) return;
+
+    while (els.suggestions.firstChild) {
+      els.suggestions.removeChild(els.suggestions.firstChild);
+    }
+
+    if (!Array.isArray(questions) || questions.length === 0) return;
+
+    questions.forEach(function (q) {
+      var btn = createEl('button', 'chat-suggestion', { type: 'button', text: q });
+      btn.addEventListener('click', function () { sendMessage(q); });
+      els.suggestions.appendChild(btn);
+    });
+  }
+
+  function pickFollowUps() {
+    var pool = FOLLOW_UP_POOL.slice();
+    var picked = [];
+    while (picked.length < FOLLOW_UP_COUNT && pool.length > 0) {
+      var idx = Math.floor(Math.random() * pool.length);
+      picked.push(pool.splice(idx, 1)[0]);
+    }
+    return picked;
+  }
+
+  function hideSuggestions() {
+    if (!els.suggestions) return;
+    while (els.suggestions.firstChild) {
+      els.suggestions.removeChild(els.suggestions.firstChild);
+    }
+  }
+
   /* ---------- DOM construction ---------- */
   function buildUI() {
+    /* Launcher button */
     els.launcher = createEl('button', 'chat-launcher', {
       type: 'button',
       'aria-label': 'Open chat assistant',
@@ -119,6 +176,7 @@
     els.launcher.innerHTML = ICON_CHAT + ICON_CLOSE;
     document.body.appendChild(els.launcher);
 
+    /* Chat window */
     els.window = createEl('div', 'chat-window', {
       id: 'chat-window',
       role: 'dialog',
@@ -154,14 +212,9 @@
       'aria-label': 'Chat messages'
     });
 
-    /* Suggestions */
+    /* Suggestions (persistent container — content is filled in later) */
     els.suggestions = createEl('div', 'chat-suggestions', {
       'aria-label': 'Suggested questions'
-    });
-    SUGGESTED_QUESTIONS.forEach(function (q) {
-      var btn = createEl('button', 'chat-suggestion', { type: 'button', text: q });
-      btn.addEventListener('click', function () { sendMessage(q); });
-      els.suggestions.appendChild(btn);
     });
 
     /* Input row */
@@ -217,6 +270,9 @@
       if (els.window.contains(e.target) || els.launcher.contains(e.target)) return;
       close();
     });
+
+    /* Initial suggestions */
+    renderSuggestions(INITIAL_SUGGESTIONS);
   }
 
   /* ---------- Open / close ---------- */
@@ -316,12 +372,14 @@
         return "I couldn't process that. Try rephrasing your question.";
       case 'model_not_found':
       case 'upstream_error':
-        return "The assistant is temporarily unavailable. Please try again.";
+      case 'upstream_unavailable':
+        return "The assistant is temporarily unavailable. Please try again in a moment.";
       case 'missing_message':
         return "Please type a question first.";
+      case 'empty_reply':
+        return "I couldn't generate a response. Please try rephrasing your question.";
     }
 
-    /* Fallbacks when the backend didn't give us a code. */
     if (/429|too many requests/i.test(msg)) return "You're sending messages too quickly. Please wait a few seconds and try again.";
     if (/timed? ?out|504/i.test(msg))       return "The request took too long. Please try again.";
     if (/failed to fetch|networkerror|network/i.test(msg))
@@ -342,19 +400,16 @@
       els.input.style.height = 'auto';
     }
 
-    if (els.suggestions && els.suggestions.parentNode) {
-      els.suggestions.parentNode.removeChild(els.suggestions);
-      els.suggestions = null;
-    }
-
     addUserMessage(text);
 
     /* History sent to the server = previously COMMITTED turns only. */
     var outgoingHistory = normalizeHistory(state.history);
 
+    /* Clear suggestions while the request is in flight. */
+    hideSuggestions();
+
     state.isSending = true;
-    els.input.disabled = true;
-    els.send.disabled = true;
+    els.send.disabled = true;                /* only the send button is disabled */
     showTyping();
 
     var startTime = Date.now();
@@ -383,7 +438,7 @@
           throw e;
         }
 
-        /* Commit the successful turn. */
+        /* Commit the successful turn only. */
         state.history.push({ role: 'user', text: text });
         state.history.push({ role: 'model', text: reply });
         state.history = normalizeHistory(state.history);
@@ -394,10 +449,11 @@
         setTimeout(function () {
           hideTyping();
           state.isSending = false;
-          els.input.disabled = false;
           els.send.disabled = false;
 
           addBotMessage(reply);
+          renderSuggestions(pickFollowUps());
+
           if (!state.isOpen) els.launcher.classList.add('has-unread');
           els.input.focus();
         }, wait);
@@ -413,9 +469,11 @@
         setTimeout(function () {
           hideTyping();
           state.isSending = false;
-          els.input.disabled = false;
           els.send.disabled = false;
+
           addErrorMessage(mapErrorToMessage(err));
+          renderSuggestions(pickFollowUps());
+
           els.input.focus();
         }, wait);
       });
