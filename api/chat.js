@@ -8,9 +8,15 @@
  *
  * Rate limiting is in-memory (per warm invocation). It is NOT persistent
  * across cold starts. For production-grade limiting use Vercel KV / Upstash.
+ *
+ * Retry policy: transient upstream errors (503, 429, 500, 502, 504) are
+ * retried up to 2 times with exponential backoff + jitter, bounded by the
+ * Vercel function time budget. Permanent errors (400, 401, 403, 404) are
+ * NOT retried. See Google's retry guidance:
+ * https://ai.google.dev/gemini-api/docs/troubleshooting
  */
 
-const GEMINI_MODEL = 'gemini-3.8-flash';
+const GEMINI_MODEL = 'gemini-3.5-flash';
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 
 const MAX_MESSAGE_LENGTH = 600;
@@ -19,6 +25,19 @@ const MAX_TURN_TEXT_LENGTH = 4000;        // per history entry, defensive cap
 const REQUEST_TIMEOUT_MS = 25_000;
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX = 10;
+
+/* ---------- Retry configuration ---------- */
+const MAX_RETRIES = 2;                    // attempts after the initial try
+const RETRY_BASE_DELAY_MS = 1000;         // 1s, then ~2s
+const RETRY_MAX_DELAY_MS = 4000;          // cap any single backoff wait
+const RETRY_JITTER_MS = 400;              // random jitter added to each wait
+const RETRYABLE_STATUSES = new Set([429, 500, 502, 503, 504]);
+
+/* Safety margin so retries never push us past the Vercel function limit.
+   If your plan's maxDuration is 60s (Pro) rather than 10s (Hobby default),
+   bump REQUEST_TIMEOUT_MS accordingly — the retry loop will use whatever
+   budget remains. */
+const MIN_REMAINING_BUDGET_MS = 2500;     // don't start a retry with < 2.5s left
 
 /* ---------- Portfolio knowledge (unchanged) ---------- */
 
@@ -158,14 +177,6 @@ function cleanRateLimitMap() {
 
 /* ---------- History normalisation (server side, defensive) ---------- */
 
-/**
- * Accepts an arbitrary array and returns a valid Gemini `contents` array
- * (as [{role, text}, ...]) that:
- *   - starts with a 'user' turn
- *   - alternates user/model (merges same-role runs)
- *   - contains no empty text
- *   - is capped at MAX_HISTORY_MESSAGES entries
- */
 function normalizeHistory(rawHistory) {
   if (!Array.isArray(rawHistory)) return [];
 
@@ -211,6 +222,123 @@ function fail(res, status, code, error, extra) {
   return res.status(status).json(body);
 }
 
+/* ---------- Retry helpers ---------- */
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Computes the backoff delay for a given retry index (1-based).
+ * Delay = base * 2^(index-1), capped at RETRY_MAX_DELAY_MS,
+ * plus a random jitter in [0, RETRY_JITTER_MS).
+ * Jitter prevents multiple visitors from retrying in lockstep.
+ */
+function computeBackoffDelay(retryIndex) {
+  const exponential = RETRY_BASE_DELAY_MS * Math.pow(2, retryIndex - 1);
+  const capped = Math.min(exponential, RETRY_MAX_DELAY_MS);
+  const jitter = Math.random() * RETRY_JITTER_MS;
+  return Math.round(capped + jitter);
+}
+
+/* ---------- Gemini call with bounded retries ---------- */
+
+/**
+ * Calls the Gemini generateContent endpoint with retry-on-transient-error.
+ *
+ * @param {object} payload - Gemini request body.
+ * @param {string} apiKey  - Gemini API key (never logged or echoed).
+ * @param {number} deadline - Absolute epoch ms after which we must stop.
+ * @returns {Promise<{ok: true, data: object} | {ok: false, status: number, body: string, errorCode?: string}>}
+ */
+async function callGeminiWithRetry(payload, apiKey, deadline) {
+  let lastStatus = 0;
+  let lastBody = '';
+  let lastErrorCode = undefined;
+
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    /* Check remaining budget before every attempt (including the first). */
+    const remaining = deadline - Date.now();
+    if (remaining < MIN_REMAINING_BUDGET_MS) {
+      // Not enough time to safely finish another attempt.
+      return {
+        ok: false,
+        status: lastStatus || 504,
+        body: lastBody || 'Request deadline exceeded before attempt could run.',
+        errorCode: 'timeout'
+      };
+    }
+
+    /* Per-attempt timeout: never exceed the remaining budget. */
+    const attemptTimeoutMs = Math.max(1000, Math.min(REQUEST_TIMEOUT_MS, remaining));
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), attemptTimeoutMs);
+
+    try {
+      const upstream = await fetch(`${GEMINI_URL}?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+
+      if (upstream.ok) {
+        const data = await upstream.json();
+        return { ok: true, data };
+      }
+
+      lastStatus = upstream.status;
+      lastBody = await upstream.text().catch(() => '');
+      lastErrorCode = upstream.headers.get('x-goog-error-code') || undefined;
+
+      /* Permanent errors — do not retry. */
+      if (!RETRYABLE_STATUSES.has(upstream.status)) {
+        return { ok: false, status: upstream.status, body: lastBody, errorCode: lastErrorCode };
+      }
+
+      /* Transient error — log and retry if budget allows. */
+      console.warn(
+        `[chat] Gemini ${upstream.status} on attempt ${attempt + 1}/${MAX_RETRIES + 1}:`,
+        lastBody.slice(0, 200)
+      );
+    } catch (err) {
+      clearTimeout(timeoutId);
+
+      if (err && err.name === 'AbortError') {
+        lastStatus = 504;
+        lastBody = 'Upstream request timed out.';
+        lastErrorCode = 'timeout';
+        console.warn(`[chat] Gemini attempt ${attempt + 1} timed out after ${attemptTimeoutMs}ms`);
+      } else {
+        lastStatus = 502;
+        lastBody = (err && err.message) ? String(err.message).slice(0, 200) : 'Network error.';
+        lastErrorCode = 'network_error';
+        console.warn(`[chat] Gemini attempt ${attempt + 1} network error:`, lastBody);
+      }
+    }
+
+    /* If we have more retries and budget, wait then loop. */
+    if (attempt < MAX_RETRIES) {
+      const delay = computeBackoffDelay(attempt + 1);
+      const afterWaitRemaining = deadline - Date.now() - delay;
+      if (afterWaitRemaining < MIN_REMAINING_BUDGET_MS) {
+        // Not enough budget after this wait — stop here, return last error.
+        break;
+      }
+      await sleep(delay);
+    }
+  }
+
+  return {
+    ok: false,
+    status: lastStatus || 503,
+    body: lastBody || 'Gemini is temporarily unavailable.',
+    errorCode: lastErrorCode
+  };
+}
+
 /* ---------- Main handler ---------- */
 
 export default async function handler(req, res) {
@@ -224,6 +352,9 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return fail(res, 405, 'method_not_allowed', 'Method not allowed. Use POST.');
   }
+
+  /* --- Overall function deadline (retries must fit inside this). --- */
+  const deadline = Date.now() + REQUEST_TIMEOUT_MS;
 
   /* --- Rate limit --- */
   cleanRateLimitMap();
@@ -294,91 +425,74 @@ export default async function handler(req, res) {
     ]
   };
 
-  /* --- Call Gemini with timeout --- */
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  /* --- Call Gemini with bounded retries --- */
+  const result = await callGeminiWithRetry(geminiPayload, apiKey, deadline);
 
-  try {
-    const geminiRes = await fetch(`${GEMINI_URL}?key=${apiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(geminiPayload),
-      signal: controller.signal
-    });
+  if (!result.ok) {
+    const status = result.status;
 
-    clearTimeout(timeoutId);
-
-    if (!geminiRes.ok) {
-      const errText = await geminiRes.text().catch(() => '');
-      console.error(`[chat] Gemini ${geminiRes.status}:`, errText.slice(0, 300));
-
-      switch (geminiRes.status) {
-        case 400:
-          return fail(res, 400, 'bad_request',
-            'The request could not be processed. Please rephrase your question.');
-        case 401:
-        case 403:
-          return fail(res, 500, 'auth_error',
-            'AI service authentication failed.');
-        case 404:
-          return fail(res, 500, 'model_not_found',
-            `Gemini model "${GEMINI_MODEL}" was not found.`);
-        case 429:
-          return fail(res, 429, 'rate_limited',
-            'The assistant is busy right now. Please try again in a few seconds.');
-        default:
-          return fail(res, 502, 'upstream_error',
-            'The AI service returned an error. Please try again.');
-      }
+    switch (status) {
+      case 400:
+        return fail(res, 400, 'bad_request',
+          'The request could not be processed. Please rephrase your question.');
+      case 401:
+      case 403:
+        return fail(res, 500, 'auth_error',
+          'AI service authentication failed.');
+      case 404:
+        return fail(res, 500, 'model_not_found',
+          `Gemini model "${GEMINI_MODEL}" was not found.`);
+      case 429:
+        return fail(res, 429, 'rate_limited',
+          'The assistant is busy right now. Please try again in a few seconds.');
+      case 503:
+        return fail(res, 503, 'upstream_unavailable',
+          'The AI service is temporarily overloaded. Please try again in a moment.');
+      case 504:
+        return fail(res, 504, 'timeout',
+          'The request took too long. Please try again.');
+      default:
+        return fail(res, 502, 'upstream_error',
+          'The AI service returned an error. Please try again.');
     }
+  }
 
-    const data = await geminiRes.json();
+  const data = result.data;
 
-    /* Handle prompt-level blocking (no candidates returned). */
-    const blockReason = data?.promptFeedback?.blockReason;
-    if (blockReason) {
+  /* Handle prompt-level blocking (no candidates returned). */
+  const blockReason = data?.promptFeedback?.blockReason;
+  if (blockReason) {
+    return res.status(200).json({
+      reply: "I can't answer that one. Try asking about Sakib's projects, skills, education, or contact details."
+    });
+  }
+
+  const candidate = data?.candidates?.[0];
+  const finishReason = candidate?.finishReason;
+
+  let text = '';
+  if (candidate && candidate.content && Array.isArray(candidate.content.parts)) {
+    text = candidate.content.parts
+      .map((p) => (typeof p.text === 'string' ? p.text : ''))
+      .join('')
+      .trim();
+  }
+
+  if (!text) {
+    if (finishReason === 'SAFETY' || finishReason === 'PROHIBITED_CONTENT') {
       return res.status(200).json({
         reply: "I can't answer that one. Try asking about Sakib's projects, skills, education, or contact details."
       });
     }
-
-    const candidate = data?.candidates?.[0];
-    const finishReason = candidate?.finishReason;
-
-    let text = '';
-    if (candidate && candidate.content && Array.isArray(candidate.content.parts)) {
-      text = candidate.content.parts
-        .map((p) => (typeof p.text === 'string' ? p.text : ''))
-        .join('')
-        .trim();
-    }
-
-    if (!text) {
-      if (finishReason === 'SAFETY' || finishReason === 'PROHIBITED_CONTENT') {
-        return res.status(200).json({
-          reply: "I can't answer that one. Try asking about Sakib's projects, skills, education, or contact details."
-        });
-      }
-      if (finishReason === 'MAX_TOKENS') {
-        return res.status(200).json({
-          reply: 'That answer was too long. Try asking a more specific question.'
-        });
-      }
+    if (finishReason === 'MAX_TOKENS') {
       return res.status(200).json({
-        reply: "I couldn't generate a response. Please try rephrasing your question."
+        reply: 'That answer was too long. Try asking a more specific question.'
       });
     }
-
-    return res.status(200).json({ reply: text });
-
-  } catch (err) {
-    clearTimeout(timeoutId);
-
-    if (err && err.name === 'AbortError') {
-      return fail(res, 504, 'timeout', 'The request timed out. Please try again.');
-    }
-
-    console.error('[chat] Unexpected error:', err && err.message);
-    return fail(res, 500, 'internal_error', 'Something went wrong on our end.');
+    return res.status(200).json({
+      reply: "I couldn't generate a response. Please try rephrasing your question."
+    });
   }
+
+  return res.status(200).json({ reply: text });
 }
