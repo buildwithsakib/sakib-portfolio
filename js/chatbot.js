@@ -1,17 +1,18 @@
 /**
- * AI Portfolio Chatbot — frontend widget
+ * AI Portfolio Chatbot — frontend widget (v2)
  *
- * Self-contained: injects its own DOM, manages state, calls /api/chat.
- * Safe rendering: uses textContent only (no innerHTML for user/AI content).
- * Accessible: focus trap, Escape to close, ARIA labels, keyboard support.
+ * Key change vs v1: conversation history is committed only after a
+ * successful reply, and it is normalized before every request so
+ * Gemini never sees an invalid `contents` array.
  */
 (function () {
   'use strict';
 
   /* ---------- Config ---------- */
   var API_ENDPOINT = '/api/chat';
-  var MAX_HISTORY = 8;           /* conversation turns to send */
-  var TYPING_DELAY_MS = 350;     /* minimum visible typing time */
+  var MAX_HISTORY_TURNS = 8;      /* user+model pairs kept in memory */
+  var MAX_HISTORY_MESSAGES = MAX_HISTORY_TURNS * 2;
+  var TYPING_DELAY_MS = 350;
 
   var SUGGESTED_QUESTIONS = [
     'Who is Sakib Shaikh?',
@@ -41,17 +42,15 @@
   var state = {
     isOpen: false,
     isSending: false,
-    history: [],        /* [{ role: 'user'|'model', text: string }] */
+    history: [],          /* committed turns only: [{role:'user'|'model', text}] */
     hasWelcomed: false,
     returnFocus: null
   };
 
-  var els = {};         /* cached DOM references */
-  var typingTimeout = null;
+  var els = {};
   var typingEl = null;
 
-  /* ---------- Helpers ---------- */
-
+  /* ---------- DOM helpers ---------- */
   function createEl(tag, className, attrs) {
     var el = document.createElement(tag);
     if (className) el.className = className;
@@ -72,10 +71,45 @@
     });
   }
 
-  /* ---------- DOM construction ---------- */
+  /* ---------- History normalization (client side) ---------- */
+  function normalizeHistory(history) {
+    if (!Array.isArray(history) || history.length === 0) return [];
 
+    var valid = [];
+    for (var i = 0; i < history.length; i++) {
+      var t = history[i];
+      if (!t || typeof t !== 'object') continue;
+      if (t.role !== 'user' && t.role !== 'model') continue;
+      var text = typeof t.text === 'string' ? t.text.trim() : '';
+      if (!text) continue;
+      valid.push({ role: t.role, text: text });
+    }
+
+    // History must start with a 'user' turn.
+    while (valid.length > 0 && valid[0].role !== 'user') valid.shift();
+
+    // Merge consecutive same-role turns (safety net).
+    var merged = [];
+    for (var j = 0; j < valid.length; j++) {
+      var curr = valid[j];
+      var prev = merged[merged.length - 1];
+      if (prev && prev.role === curr.role) {
+        prev.text += '\n\n' + curr.text;
+      } else {
+        merged.push({ role: curr.role, text: curr.text });
+      }
+    }
+
+    if (merged.length > MAX_HISTORY_MESSAGES) {
+      merged = merged.slice(-MAX_HISTORY_MESSAGES);
+      while (merged.length > 0 && merged[0].role !== 'user') merged.shift();
+    }
+
+    return merged;
+  }
+
+  /* ---------- DOM construction ---------- */
   function buildUI() {
-    /* Launcher button */
     els.launcher = createEl('button', 'chat-launcher', {
       type: 'button',
       'aria-label': 'Open chat assistant',
@@ -85,7 +119,6 @@
     els.launcher.innerHTML = ICON_CHAT + ICON_CLOSE;
     document.body.appendChild(els.launcher);
 
-    /* Chat window */
     els.window = createEl('div', 'chat-window', {
       id: 'chat-window',
       role: 'dialog',
@@ -126,13 +159,8 @@
       'aria-label': 'Suggested questions'
     });
     SUGGESTED_QUESTIONS.forEach(function (q) {
-      var btn = createEl('button', 'chat-suggestion', {
-        type: 'button',
-        text: q
-      });
-      btn.addEventListener('click', function () {
-        sendMessage(q);
-      });
+      var btn = createEl('button', 'chat-suggestion', { type: 'button', text: q });
+      btn.addEventListener('click', function () { sendMessage(q); });
       els.suggestions.appendChild(btn);
     });
 
@@ -154,17 +182,13 @@
     inputRow.appendChild(els.input);
     inputRow.appendChild(els.send);
 
-    /* Assemble */
     els.window.appendChild(header);
     els.window.appendChild(els.messages);
     els.window.appendChild(els.suggestions);
     els.window.appendChild(inputRow);
     document.body.appendChild(els.window);
 
-    /* Cache close button */
-    els.closeBtn = closeBtn;
-
-    /* ---------- Events ---------- */
+    /* Events */
     els.launcher.addEventListener('click', toggle);
     closeBtn.addEventListener('click', close);
     els.send.addEventListener('click', function () { sendMessage(); });
@@ -176,13 +200,11 @@
       }
     });
 
-    /* Auto-resize textarea */
     els.input.addEventListener('input', function () {
       els.input.style.height = 'auto';
       els.input.style.height = Math.min(els.input.scrollHeight, 120) + 'px';
     });
 
-    /* Escape to close */
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && state.isOpen) {
         e.preventDefault();
@@ -190,7 +212,6 @@
       }
     });
 
-    /* Click outside to close (desktop only) */
     document.addEventListener('mousedown', function (e) {
       if (!state.isOpen) return;
       if (els.window.contains(e.target) || els.launcher.contains(e.target)) return;
@@ -199,7 +220,6 @@
   }
 
   /* ---------- Open / close ---------- */
-
   function open() {
     if (state.isOpen) return;
     state.isOpen = true;
@@ -217,38 +237,31 @@
         "Hi! I'm Sakib's portfolio assistant. Ask me anything about his projects, skills, education, or how to get in touch."
       );
     }
-
-    setTimeout(function () {
-      if (els.input) els.input.focus();
-    }, 120);
-
+    setTimeout(function () { if (els.input) els.input.focus(); }, 120);
     scrollToBottom();
   }
 
   function close() {
     if (!state.isOpen) return;
     state.isOpen = false;
-
     els.window.classList.remove('is-open');
     els.launcher.classList.remove('is-open');
     els.launcher.setAttribute('aria-expanded', 'false');
     els.launcher.setAttribute('aria-label', 'Open chat assistant');
 
     if (state.returnFocus && state.returnFocus.focus) {
-      try { state.returnFocus.focus({ preventScroll: true }); } catch (e) { state.returnFocus.focus(); }
+      try { state.returnFocus.focus({ preventScroll: true }); }
+      catch (e) { state.returnFocus.focus(); }
     }
   }
 
-  function toggle() {
-    state.isOpen ? close() : open();
-  }
+  function toggle() { state.isOpen ? close() : open(); }
 
   /* ---------- Message rendering ---------- */
-
   function addUserMessage(text) {
     var msg = createEl('div', 'chat-msg chat-msg--user');
     var bubble = createEl('div', 'chat-bubble');
-    bubble.textContent = text;           /* safe: no HTML injection */
+    bubble.textContent = text;
     msg.appendChild(bubble);
     els.messages.appendChild(msg);
     scrollToBottom();
@@ -257,7 +270,7 @@
   function addBotMessage(text) {
     var msg = createEl('div', 'chat-msg chat-msg--bot');
     var bubble = createEl('div', 'chat-bubble');
-    bubble.textContent = text;           /* safe: no HTML injection */
+    bubble.textContent = text;
     msg.appendChild(bubble);
     els.messages.appendChild(msg);
     scrollToBottom();
@@ -271,7 +284,6 @@
   }
 
   /* ---------- Typing indicator ---------- */
-
   function showTyping() {
     if (typingEl) return;
     typingEl = createEl('div', 'chat-typing', { 'aria-label': 'Assistant is typing' });
@@ -281,27 +293,55 @@
   }
 
   function hideTyping() {
-    if (typingEl && typingEl.parentNode) {
-      typingEl.parentNode.removeChild(typingEl);
-    }
+    if (typingEl && typingEl.parentNode) typingEl.parentNode.removeChild(typingEl);
     typingEl = null;
   }
 
-  /* ---------- Send flow ---------- */
+  /* ---------- Error message mapping ---------- */
+  function mapErrorToMessage(err) {
+    var code = (err && err.code) || '';
+    var msg  = (err && err.message) || '';
 
+    switch (code) {
+      case 'rate_limited':
+        return "You're sending messages too quickly. Please wait a few seconds and try again.";
+      case 'timeout':
+        return "The request took too long. Please try again.";
+      case 'no_api_key':
+      case 'auth_error':
+      case 'internal_error':
+        return "The assistant isn't available right now. Please try again in a moment.";
+      case 'bad_request':
+      case 'invalid_json':
+        return "I couldn't process that. Try rephrasing your question.";
+      case 'model_not_found':
+      case 'upstream_error':
+        return "The assistant is temporarily unavailable. Please try again.";
+      case 'missing_message':
+        return "Please type a question first.";
+    }
+
+    /* Fallbacks when the backend didn't give us a code. */
+    if (/429|too many requests/i.test(msg)) return "You're sending messages too quickly. Please wait a few seconds and try again.";
+    if (/timed? ?out|504/i.test(msg))       return "The request took too long. Please try again.";
+    if (/failed to fetch|networkerror|network/i.test(msg))
+      return "Network issue. Please check your connection and try again.";
+    if (/405|method/i.test(msg))            return "The assistant is misconfigured. Please try again later.";
+    return "Something went wrong. Please try again.";
+  }
+
+  /* ---------- Send flow ---------- */
   function sendMessage(overrideText) {
     if (state.isSending) return;
 
     var text = (overrideText || els.input.value || '').trim();
     if (!text) return;
 
-    /* Clear input */
     if (!overrideText) {
       els.input.value = '';
       els.input.style.height = 'auto';
     }
 
-    /* Hide suggestions after first user message */
     if (els.suggestions && els.suggestions.parentNode) {
       els.suggestions.parentNode.removeChild(els.suggestions);
       els.suggestions = null;
@@ -309,13 +349,9 @@
 
     addUserMessage(text);
 
-    /* Push to history */
-    state.history.push({ role: 'user', text: text });
-    if (state.history.length > MAX_HISTORY * 2) {
-      state.history = state.history.slice(-MAX_HISTORY * 2);
-    }
+    /* History sent to the server = previously COMMITTED turns only. */
+    var outgoingHistory = normalizeHistory(state.history);
 
-    /* Disable input while sending */
     state.isSending = true;
     els.input.disabled = true;
     els.send.disabled = true;
@@ -325,21 +361,33 @@
 
     fetch(API_ENDPOINT, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        message: text,
-        history: state.history.slice(0, -1)   /* exclude the just-added user turn */
-      })
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ message: text, history: outgoingHistory })
     })
       .then(function (res) {
-        if (!res.ok) {
-          return res.json().catch(function () { return {}; }).then(function (data) {
-            throw new Error(data.error || 'Request failed with status ' + res.status);
-          });
-        }
-        return res.json();
+        return res.json().catch(function () { return {}; }).then(function (data) {
+          if (!res.ok) {
+            var e = new Error((data && data.error) || ('Request failed with status ' + res.status));
+            e.code = (data && data.code) || ('http_' + res.status);
+            e.status = res.status;
+            throw e;
+          }
+          return data;
+        });
       })
       .then(function (data) {
+        var reply = (data && typeof data.reply === 'string') ? data.reply.trim() : '';
+        if (!reply) {
+          var e = new Error('empty_reply');
+          e.code = 'empty_reply';
+          throw e;
+        }
+
+        /* Commit the successful turn. */
+        state.history.push({ role: 'user', text: text });
+        state.history.push({ role: 'model', text: reply });
+        state.history = normalizeHistory(state.history);
+
         var elapsed = Date.now() - startTime;
         var wait = Math.max(0, TYPING_DELAY_MS - elapsed);
 
@@ -349,25 +397,16 @@
           els.input.disabled = false;
           els.send.disabled = false;
 
-          var reply = (data && data.reply) ? String(data.reply).trim() : '';
-          if (reply) {
-            addBotMessage(reply);
-            state.history.push({ role: 'model', text: reply });
-            if (state.history.length > MAX_HISTORY * 2) {
-              state.history = state.history.slice(-MAX_HISTORY * 2);
-            }
-          } else {
-            addErrorMessage("I couldn't generate a response. Please try again.");
-          }
-
-          if (!state.isOpen) {
-            els.launcher.classList.add('has-unread');
-          }
-
+          addBotMessage(reply);
+          if (!state.isOpen) els.launcher.classList.add('has-unread');
           els.input.focus();
         }, wait);
       })
       .catch(function (err) {
+        if (window.console && console.warn) {
+          console.warn('[chatbot] request failed:', err && err.code, err && err.message);
+        }
+
         var elapsed = Date.now() - startTime;
         var wait = Math.max(0, TYPING_DELAY_MS - elapsed);
 
@@ -376,40 +415,17 @@
           state.isSending = false;
           els.input.disabled = false;
           els.send.disabled = false;
-
-          var message = "Something went wrong. Please try again.";
-          if (err && err.message) {
-            if (/Too many requests/i.test(err.message)) {
-              message = "You're sending messages too quickly. Please wait a few seconds and try again.";
-            } else if (/timed out/i.test(err.message)) {
-              message = "The request took too long. Please try again.";
-            } else if (/not configured/i.test(err.message)) {
-              message = "The assistant isn't available right now. Please try again later.";
-            } else if (/rephrase/i.test(err.message)) {
-              message = "I couldn't understand that. Could you rephrase your question?";
-            }
-          }
-
-          addErrorMessage(message);
+          addErrorMessage(mapErrorToMessage(err));
           els.input.focus();
         }, wait);
       });
   }
 
   /* ---------- Init ---------- */
-
   function init() {
-    /* Prevent double-injection (e.g., if script is included twice) */
     if (document.getElementById('chat-window')) return;
-
     buildUI();
-
-    /* Optional: expose a global to open the chat programmatically */
-    window.PortfolioChat = {
-      open: open,
-      close: close,
-      toggle: toggle
-    };
+    window.PortfolioChat = { open: open, close: close, toggle: toggle };
   }
 
   if (document.readyState === 'loading') {
