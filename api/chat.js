@@ -2,42 +2,43 @@
  * Vercel Serverless Function: POST /api/chat
  *
  * Proxies chat messages to Google Gemini API.
- * Portfolio knowledge is injected as a system instruction.
  *
- * Environment variable required: GEMINI_API_KEY
+ * ROOT-CAUSE FIX (vs previous version):
+ *   Gemini 3.8 Flash defaults to thinking_level "medium", which generates
+ *   hundreds of internal reasoning tokens before the visible answer. For a
+ *   portfolio FAQ bot this is pure latency. We now set thinkingLevel: "low"
+ *   explicitly, which Google positions for latency-sensitive chat.
+ *   See: https://ai.google.dev/gemini-api/docs/troubleshooting (thinking models)
  *
- * Rate limiting is in-memory (per warm invocation). It is NOT persistent
- * across cold starts. For production-grade limiting use Vercel KV / Upstash.
+ * Retry policy: at most ONE retry for transient upstream errors (502/503/504),
+ * with a short fixed backoff + jitter, strictly bounded by the Vercel function
+ * time budget. Permanent errors (400/401/403/404) and rate limits (429) are
+ * never retried.
  *
- * Retry policy: transient upstream errors (502, 503, 504) are retried at
- * most ONE time with a short exponential backoff + jitter, bounded by the
- * Vercel function time budget. Permanent errors (400, 401, 403, 404) and
- * rate-limit errors (429) are NOT retried.
- *
- * NOTE ON TIMEOUTS: Vercel Hobby has a 10s function limit by default.
- * REQUEST_TIMEOUT_MS is set to 8.5s to leave headroom. If you upgrade to
- * Pro (60s limit) you can safely raise it, but the retry loop will use
- * whatever budget you give it.
+ * Timing logs (no secrets, no visitor messages) are emitted at INFO/WARN
+ * level so Vercel function logs show exactly where time is spent.
  */
 
-const GEMINI_MODEL = 'gemini-3.5-flash';
+const GEMINI_MODEL = 'gemini-3.8-flash';
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 
 const MAX_MESSAGE_LENGTH = 600;
-const MAX_HISTORY_MESSAGES = 8;           // 4 user/model pairs
-const MAX_TURN_TEXT_LENGTH = 1500;        // per history entry, defensive cap
-const REQUEST_TIMEOUT_MS = 8_500;         // fits inside Vercel Hobby's 10s limit
+const MAX_HISTORY_MESSAGES = 8;           // 4 user/model pairs — plenty for FAQ context
+const MAX_TURN_TEXT_LENGTH = 1200;        // per history entry, defensive cap
+const REQUEST_TIMEOUT_MS = 9_500;         // fits inside Vercel Hobby's 10s default
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX = 10;
 
 /* ---------- Retry configuration ---------- */
 const MAX_RETRIES = 1;                    // one retry after the initial attempt
-const RETRY_BASE_DELAY_MS = 600;          // 600ms, capped below
-const RETRY_MAX_DELAY_MS = 1500;
-const RETRY_JITTER_MS = 200;
+const RETRY_BASE_DELAY_MS = 400;          // short: not enough budget for 1s+
+const RETRY_MAX_DELAY_MS = 800;
+const RETRY_JITTER_MS = 150;
 const RETRYABLE_STATUSES = new Set([502, 503, 504]);
 
-const MIN_REMAINING_BUDGET_MS = 1500;     // don't start a retry with less than this left
+/* With thinkingLevel "low", a typical attempt completes in 2–4s. We need at
+   least this much remaining to justify starting another full attempt. */
+const MIN_REMAINING_BUDGET_MS = 3000;
 
 /* ---------- Portfolio knowledge (unchanged) ---------- */
 
@@ -235,26 +236,31 @@ function computeBackoffDelay(retryIndex) {
   return Math.round(capped + jitter);
 }
 
-/* ---------- Gemini call with bounded retries ---------- */
+/* ---------- Gemini call with bounded retries and timing logs ---------- */
 
 async function callGeminiWithRetry(payload, apiKey, deadline) {
   let lastStatus = 0;
   let lastBody = '';
+  const startedAt = Date.now();
 
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
     const remaining = deadline - Date.now();
     if (remaining < MIN_REMAINING_BUDGET_MS) {
+      console.warn(
+        `[chat] aborting before attempt ${attempt + 1}: only ${remaining}ms left ` +
+        `(need ${MIN_REMAINING_BUDGET_MS}ms)`
+      );
       return {
         ok: false,
         status: lastStatus || 504,
-        body: lastBody || 'Deadline exceeded before attempt could run.'
+        body: lastBody || 'Budget exhausted before retry.'
       };
     }
 
-    /* Never exceed the remaining budget. No floor greater than `remaining`. */
     const attemptTimeoutMs = Math.min(REQUEST_TIMEOUT_MS, remaining);
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), attemptTimeoutMs);
+    const attemptStart = Date.now();
 
     try {
       const upstream = await fetch(`${GEMINI_URL}?key=${apiKey}`, {
@@ -265,8 +271,13 @@ async function callGeminiWithRetry(payload, apiKey, deadline) {
       });
 
       clearTimeout(timeoutId);
+      const attemptMs = Date.now() - attemptStart;
 
       if (upstream.ok) {
+        console.log(
+          `[chat] attempt ${attempt + 1}/${MAX_RETRIES + 1} OK in ${attemptMs}ms ` +
+          `(total ${Date.now() - startedAt}ms)`
+        );
         const data = await upstream.json();
         return { ok: true, data };
       }
@@ -274,36 +285,41 @@ async function callGeminiWithRetry(payload, apiKey, deadline) {
       lastStatus = upstream.status;
       lastBody = await upstream.text().catch(() => '');
 
-      /* Permanent / non-retryable — return immediately. */
+      console.warn(
+        `[chat] attempt ${attempt + 1}/${MAX_RETRIES + 1} upstream ${upstream.status} ` +
+        `in ${attemptMs}ms`
+      );
+
       if (!RETRYABLE_STATUSES.has(upstream.status)) {
         return { ok: false, status: lastStatus, body: lastBody };
       }
-
-      console.warn(
-        `[chat] Gemini ${upstream.status} on attempt ${attempt + 1}/${MAX_RETRIES + 1}`
-      );
     } catch (err) {
       clearTimeout(timeoutId);
+      const attemptMs = Date.now() - attemptStart;
 
       if (err && err.name === 'AbortError') {
         lastStatus = 504;
         lastBody = 'Upstream timeout.';
+        console.warn(`[chat] attempt ${attempt + 1} timed out after ${attemptMs}ms`);
       } else {
         lastStatus = 502;
         lastBody = (err && err.message) ? String(err.message).slice(0, 200) : 'Network error.';
+        console.warn(`[chat] attempt ${attempt + 1} network error after ${attemptMs}ms: ${lastBody}`);
       }
-      console.warn(`[chat] Gemini attempt ${attempt + 1} failed: ${lastBody}`);
     }
 
-    /* Last attempt — return the error. */
     if (attempt >= MAX_RETRIES) break;
 
-    /* Only wait if the budget still fits the delay AND a fresh attempt. */
     const delay = computeBackoffDelay(attempt + 1);
-    if (deadline - Date.now() - delay < MIN_REMAINING_BUDGET_MS) break;
+    if (deadline - Date.now() - delay < MIN_REMAINING_BUDGET_MS) {
+      console.warn(`[chat] skipping retry: budget would not fit delay ${delay}ms`);
+      break;
+    }
+    console.log(`[chat] backing off ${delay}ms before retry`);
     await sleep(delay);
   }
 
+  console.warn(`[chat] all attempts exhausted in ${Date.now() - startedAt}ms (last status ${lastStatus})`);
   return {
     ok: false,
     status: lastStatus || 503,
@@ -314,7 +330,6 @@ async function callGeminiWithRetry(payload, apiKey, deadline) {
 /* ---------- Main handler ---------- */
 
 export default async function handler(req, res) {
-  /* CORS — same-origin by default; loosen only if you embed elsewhere. */
   res.setHeader('Access-Control-Allow-Origin', 'https://sakib-portfolio-three.vercel.app');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept');
@@ -325,8 +340,8 @@ export default async function handler(req, res) {
     return fail(res, 405, 'method_not_allowed', 'Method not allowed. Use POST.');
   }
 
-  /* --- Overall function deadline (retries must fit inside this). --- */
   const deadline = Date.now() + REQUEST_TIMEOUT_MS;
+  const requestStart = Date.now();
 
   /* --- Rate limit --- */
   cleanRateLimitMap();
@@ -370,7 +385,7 @@ export default async function handler(req, res) {
     return fail(res, 400, 'missing_message', 'A non-empty "message" field is required.');
   }
 
-  /* --- Normalise history (defensive — frontend may also do this) --- */
+  /* --- Normalise history --- */
   const history = normalizeHistory(body.history);
 
   /* --- Build Gemini request --- */
@@ -387,7 +402,20 @@ export default async function handler(req, res) {
       temperature: 0.7,
       topP: 0.9,
       topK: 40,
-      maxOutputTokens: 400           // reduced from 800 — faster, still 2-5 sentences
+      maxOutputTokens: 400,            // 2–5 sentences + minimal thinking
+      /*
+       * THE KEY FIX.
+       * Gemini 3.8 Flash defaults to thinkingLevel "medium", which adds
+       * 5–10s of internal reasoning before the visible answer. For a
+       * portfolio FAQ bot, "low" is the correct level: it minimizes
+       * latency while still following instructions accurately.
+       *
+       * Allowed values: "low" | "medium" | "high".
+       * "minimal" is NOT supported on 3.8 Flash and will 400.
+       */
+      thinkingConfig: {
+        thinkingLevel: 'low'
+      }
     },
     safetySettings: [
       { category: 'HARM_CATEGORY_HARASSMENT',        threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
@@ -397,8 +425,10 @@ export default async function handler(req, res) {
     ]
   };
 
-  /* --- Call Gemini with bounded retries --- */
+  /* --- Call Gemini --- */
   const result = await callGeminiWithRetry(geminiPayload, apiKey, deadline);
+
+  console.log(`[chat] handler complete in ${Date.now() - requestStart}ms (ok=${result.ok})`);
 
   if (!result.ok) {
     const status = result.status;
@@ -431,7 +461,6 @@ export default async function handler(req, res) {
 
   const data = result.data;
 
-  /* Handle prompt-level blocking (no candidates returned). */
   const blockReason = data?.promptFeedback?.blockReason;
   if (blockReason) {
     return res.status(200).json({
